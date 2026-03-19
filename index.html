@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+  />
+  <meta name="theme-color" content="#2B6B5E" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="重訪ケア管理" />
+  <title>重訪ケア管理</title>
+  <style>
+    :root{
+      --bg:#F7F5F0;
+      --card:#FFFFFF;
+      --primary:#2B6B5E;
+      --primary-dark:#1E4D44;
+      --primary-light:#E8F0EE;
+      --accent:#D4764E;
+      --accent-light:#FDF0EB;
+      --danger:#C0392B;
+      --danger-light:#FDEDEB;
+      --text:#2C3E40;
+      --text-light:#7A8B8D;
+      --border:#E2DED6;
+      --purple:#6C5CE7;
+      --purple-light:#F0EDFC;
+      --shadow:0 2px 12px rgba(43,107,94,0.08);
+      --radius:16px;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+    }
+
+    button,input,select,textarea{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    .app{
+      min-height:100vh;
+      background:var(--bg);
+    }
+
+    .header{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff;
+      padding:18px 16px 16px;
+      box-shadow:0 4px 20px rgba(43,107,94,0.25);
+    }
+
+    .header-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .brand-icon{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      flex-shrink:0;
+    }
+
+    .brand-text{
+      min-width:0;
+    }
+
+    .brand-title{
+      font-size:17px;
+      font-weight:800;
+      line-height:1.2;
+      letter-spacing:.02em;
+    }
+
+    .brand-sub{
+      margin-top:2px;
+      font-size:11px;
+      opacity:.8;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .header-actions{
+      display:flex;
+      gap:8px;
+      flex-shrink:0;
+    }
+
+    .icon-btn{
+      width:38px;
+      height:38px;
+      border:none;
+      border-radius:11px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,0.15);
+      color:#fff;
+      font-size:16px;
+    }
+
+    .icon-btn.white{
+      background:#fff;
+      color:var(--primary);
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .main{
+      max-width:720px;
+      margin:0 auto;
+      padding:14px 14px 110px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .section{
+      margin-bottom:12px;
+      padding:16px;
+    }
+
+    .search-box{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+    }
+
+    .search-box input{
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text);
+      font-size:14px;
+    }
+
+    .clear-btn{
+      width:24px;
+      height:24px;
+      border:none;
+      border-radius:999px;
+      background:var(--border);
+      color:var(--text-light);
+      flex-shrink:0;
+    }
+
+    .chips{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      padding:2px 0 10px;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .chip{
+      white-space:nowrap;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text-light);
+      padding:7px 13px;
+      font-size:12px;
+    }
+
+    .chip.active{
+      background:var(--primary-light);
+      color:var(--primary-dark);
+      border:1.5px solid var(--primary);
+      font-weight:700;
+    }
+
+    .muted{
+      font-size:12px;
+      color:var(--text-light);
+    }
+
+    .empty{
+      text-align:center;
+      padding:48px 18px;
+      color:var(--text-light);
+    }
+
+    .empty-icon{
+      width:62px;
+      height:62px;
+      border-radius:20px;
+      background:var(--primary-light);
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      margin:0 auto 14px;
+    }
+
+    .client-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .client-item{
+      width:100%;
+      border:none;
+      text-align:left;
+      padding:14px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+    }
+
+    .avatar{
+      width:46px;
+      height:46px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--primary-light),rgba(43,107,94,.15));
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:16px;
+      flex-shrink:0;
+    }
+
+    .client-main{
+      flex:1;
+      min-width:0;
+    }
+
+    .client-name-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px 8px;
+      align-items:center;
+      margin-bottom:4px;
+    }
+
+    .client-name{
+      font-size:15px;
+      font-weight:800;
+    }
+
+    .mini-badge{
+      font-size:10px;
+      padding:2px 8px;
+      border-radius:7px;
+      background:var(--accent-light);
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .office-text{
+      font-size:11px;
+      color:var(--primary);
+      font-weight:700;
+      margin-bottom:4px;
+    }
+
+    .tag-wrap{
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      margin-top:4px;
+    }
+
+    .tag{
+      font-size:10px;
+      padding:3px 7px;
+      border-radius:6px;
+      background:var(--primary-light);
+      color:var(--primary-dark);
+      font-weight:600;
+    }
+
+    .tag.purple{
+      background:var(--purple-light);
+      color:var(--purple);
+    }
+
+    .detail-top{
+      text-align:center;
+      padding:18px;
+    }
+
+    .detail-avatar{
+      width:66px;
+      height:66px;
+      border-radius:20px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:24px;
+      margin:0 auto 10px;
+    }
+
+    .detail-name{
+      font-size:21px;
+      font-weight:800;
+      margin-bottom:4px;
+    }
+
+    .detail-kana{
+      font-size:12px;
+      color:var(--text-light);
+      margin-bottom:8px;
+    }
+
+    .detail-badges{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .pill{
+      font-size:12px;
+      background:var(--bg);
+      padding:4px 10px;
+      border-radius:9px;
+    }
+
+    .pill.accent{
+      background:var(--accent-light);
+      color:var(--accent);
+      font-weight:700;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:14px;
+      font-weight:800;
+      color:var(--primary);
+      margin-bottom:12px;
+      padding-bottom:8px;
+      border-bottom:2px solid var(--primary-light);
+    }
+
+    .section-title.purple{
+      color:var(--purple);
+      border-bottom-color:rgba(108,92,231,.18);
+    }
+
+    .section-title.accent{
+      color:var(--accent);
+      border-bottom-color:rgba(212,118,78,.18);
+    }
+
+    .info-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0;
+      border-bottom:1px solid var(--bg);
+      align-items:flex-start;
+    }
+
+    .info-label{
+      min-width:78px;
+      font-size:12px;
+      color:var(--text-light);
+    }
+
+    .info-value{
+      flex:1;
+      text-align:right;
+      font-size:13px;
+      font-weight:600;
+      word-break:break-all;
+    }
+
+    .info-value.danger{
+      color:var(--danger);
+    }
+
+    .text-block{
+      margin-top:10px;
+      font-size:13px;
+      line-height:1.8;
+      white-space:pre-wrap;
+    }
+
+    .soft-box{
+      background:var(--bg);
+      border-radius:10px;
+      padding:12px;
+    }
+
+    .accent-box{
+      background:var(--accent-light);
+      border-left:3px solid var(--accent);
+      border-radius:10px;
+      padding:12px;
+    }
+
+    .danger-box{
+      background:var(--danger-light);
+      color:var(--danger);
+      border-radius:10px;
+      padding:12px;
+    }
+
+    .disease-card{
+      background:var(--purple-light);
+      border-left:3px solid var(--purple);
+      border-radius:10px;
+      padding:12px;
+      margin-bottom:8px;
+    }
+
+    .disease-name{
+      font-size:13px;
+      font-weight:800;
+      color:var(--purple);
+      margin-bottom:6px;
+    }
+
+    .disease-text{
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:14px 16px;
+      font-weight:800;
+      font-size:14px;
+    }
+
+    .btn.primary{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .btn.secondary{
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+
+    .btn.danger{
+      background:var(--danger);
+      color:#fff;
+    }
+
+    .btn.ghost-danger{
+      background:#fff;
+      color:var(--danger);
+      border:1px solid var(--border);
+      width:54px;
+      flex-shrink:0;
+    }
+
+    .btn-row{
+      display:flex;
+      gap:10px;
+    }
+
+    .btn-row .btn{
+      flex:1;
+    }
+
+    .form-card{
+      padding:18px;
+    }
+
+    .form-grid{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .field label{
+      display:flex;
+      gap:4px;
+      align-items:center;
+      font-size:12px;
+      font-weight:700;
+      color:var(--text-light);
+      margin-bottom:6px;
+    }
+
+    .req{
+      color:var(--accent);
+      font-size:10px;
+    }
+
+    .input, .textarea, .select{
+      width:100%;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      border-radius:10px;
+      padding:11px 14px;
+      font-size:14px;
+      outline:none;
+    }
+
+    .textarea{
+      resize:vertical;
+      min-height:70px;
+    }
+
+    .textarea.large{
+      min-height:120px;
+    }
+
+    .field-row{
+      display:flex;
+      gap:10px;
+    }
+
+    .field-row > .field{
+      flex:1;
+      min-width:0;
+    }
+
+    .helper{
+      font-size:12px;
+      color:var(--text-light);
+      margin-bottom:10px;
+      line-height:1.6;
+    }
+
+    .selector-wrap{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-bottom:12px;
+    }
+
+    .selector{
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text-light);
+      padding:7px 11px;
+      font-size:12px;
+    }
+
+    .selector.active{
+      background:var(--primary-light);
+      color:var(--primary-dark);
+      border:1.5px solid var(--primary);
+      font-weight:700;
+    }
+
+    .selector.purple.active{
+      background:var(--purple-light);
+      color:var(--purple);
+      border-color:var(--purple);
+    }
+
+    .inline-add{
+      display:flex;
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .inline-add .input{
+      flex:1;
+    }
+
+    .custom-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-bottom:12px;
+    }
+
+    .custom-tag{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      font-size:12px;
+      font-weight:700;
+      border-radius:8px;
+      background:var(--accent-light);
+      color:var(--accent);
+    }
+
+    .mini-x{
+      border:none;
+      background:none;
+      color:inherit;
+      padding:0;
+      font-size:14px;
+      line-height:1;
+    }
+
+    .settings-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .setting-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      background:var(--bg);
+      border-radius:12px;
+    }
+
+    .toggle{
+      position:relative;
+      width:52px;
+      height:30px;
+      border:none;
+      border-radius:999px;
+      background:#d8d3c8;
+      transition:.2s;
+      flex-shrink:0;
+    }
+
+    .toggle::after{
+      content:"";
+      position:absolute;
+      top:3px;
+      left:3px;
+      width:24px;
+      height:24px;
+      background:#fff;
+      border-radius:50%;
+      transition:.2s;
+      box-shadow:0 1px 4px rgba(0,0,0,.15);
+    }
+
+    .toggle.active{
+      background:var(--primary);
+    }
+
+    .toggle.active::after{
+      left:25px;
+    }
+
+    .office-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 14px;
+      background:var(--bg);
+      border-radius:12px;
+      margin-bottom:8px;
+    }
+
+    .office-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+    }
+
+    .office-badge{
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      background:var(--primary-light);
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:13px;
+      flex-shrink:0;
+    }
+
+    .small-note{
+      font-size:11px;
+      color:var(--text-light);
+      line-height:1.6;
+    }
+
+    .security-banner{
+      margin-top:10px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.18);
+      color:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:11px;
+      line-height:1.6;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.5);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:100;
+    }
+
+    .modal-card{
+      width:100%;
+      max-width:360px;
+      background:#fff;
+      border-radius:18px;
+      padding:22px;
+      text-align:center;
+      box-shadow:0 16px 40px rgba(0,0,0,.18);
+    }
+
+    .modal-icon{
+      width:50px;
+      height:50px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 14px;
+      font-size:24px;
+      background:var(--primary-light);
+      color:var(--primary);
+    }
+
+    .modal-icon.danger{
+      background:var(--danger-light);
+      color:var(--danger);
+    }
+
+    .modal-title{
+      font-size:17px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .modal-text{
+      font-size:13px;
+      color:var(--text-light);
+      line-height:1.7;
+      margin-bottom:18px;
+      white-space:pre-wrap;
+    }
+
+    .pin-input{
+      width:100%;
+      text-align:center;
+      font-size:26px;
+      letter-spacing:.35em;
+      padding:14px 10px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      margin-bottom:12px;
+      outline:none;
+    }
+
+    .lock-screen{
+      position:fixed;
+      inset:0;
+      z-index:200;
+      background:linear-gradient(180deg,#f5f2eb 0%, #ecf4f1 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .lock-card{
+      width:100%;
+      max-width:380px;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:22px;
+      padding:24px 20px;
+      box-shadow:0 16px 40px rgba(0,0,0,.12);
+      text-align:center;
+    }
+
+    .lock-badge{
+      width:64px;
+      height:64px;
+      margin:0 auto 16px;
+      border-radius:20px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      font-weight:800;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .footer-space{
+      height:20px;
+    }
+
+    @media (max-width:420px){
+      .field-row{
+        flex-direction:column;
+      }
+      .header{
+        padding-top:calc(16px + env(safe-area-inset-top));
+      }
+      .main{
+        padding-bottom:calc(110px + env(safe-area-inset-bottom));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app"></div>
+
+  <script>
+    const STORAGE_KEY = "care_secure_clients_v1";
+    const OFFICES_KEY = "care_secure_offices_v1";
+    const SETTINGS_KEY = "care_secure_settings_v1";
+    const PIN_KEY = "care_secure_pin_v1";
+
+    const DISEASE_LIST = [
+      {
+        name: "ALS（筋萎縮性側索硬化症）",
+        symptoms: "四肢の筋力低下・萎縮、構音障害、嚥下障害、呼吸筋麻痺。進行に伴い人工呼吸器・胃ろう管理が必要になることが多い。コミュニケーション手段の確保が重要。"
+      },
+      {
+        name: "筋ジストロフィー",
+        symptoms: "進行性の筋力低下・筋萎縮、関節拘縮、心筋障害、呼吸機能低下。移乗・体位変換の介助が必須。拘縮予防のためのストレッチが重要。"
+      },
+      {
+        name: "パーキンソン病",
+        symptoms: "安静時振戦、筋強剛、無動・寡動、姿勢反射障害。すくみ足による転倒リスク、嚥下障害、自律神経症状（起立性低血圧・便秘）。服薬管理とオン・オフの把握が重要。"
+      },
+      {
+        name: "脳性麻痺",
+        symptoms: "痙縮・不随意運動、姿勢保持困難、関節変形・拘縮、摂食嚥下障害。個人差が大きく、コミュニケーション方法・姿勢管理・呼吸管理を個別に把握する必要がある。"
+      },
+      {
+        name: "脊髄損傷",
+        symptoms: "損傷レベル以下の運動・感覚麻痺、排泄障害（自己導尿・膀胱管理）、自律神経過反射、褥瘡リスク、体温調節障害。損傷レベルによりADLが大きく異なる。"
+      },
+      {
+        name: "多発性硬化症（MS）",
+        symptoms: "視力障害、四肢の痺れ・脱力、疲労感、排尿障害、認知機能低下。寛解と再発を繰り返し、症状が日によって変動することがある。"
+      },
+      {
+        name: "脳血管障害（脳卒中後遺症）",
+        symptoms: "片麻痺、失語症、高次脳機能障害（注意障害・半側空間無視など）、嚥下障害、排泄障害。麻痺側の管理と転倒予防が重要。"
+      },
+      {
+        name: "重症心身障害",
+        symptoms: "重度の知的障害と重度の肢体不自由の重複。全介助、医療的ケア（吸引・経管栄養・呼吸管理）が必要な場合が多い。表情やバイタルからの状態把握が重要。"
+      },
+      {
+        name: "遷延性意識障害",
+        symptoms: "意識レベル低下の持続、自発的な意思表示困難、全身管理（栄養・排泄・呼吸・褥瘡予防）が必要。わずかな反応の変化に注意を払う。"
+      }
+    ];
+
+    const CONDITION_TAGS = [
+      "気管切開", "人工呼吸器", "経管栄養", "胃ろう", "吸引必要",
+      "褥瘡リスク", "てんかん", "糖尿病", "高血圧", "嚥下障害",
+      "排泄介助", "体位変換", "コミュニケーション支援", "移乗介助"
+    ];
+
+    const DISABILITY_LEVELS = ["区分1","区分2","区分3","区分4","区分5","区分6"];
+
+    const state = {
+      clients: [],
+      offices: [],
+      settings: {
+        autoLockMinutes: 3,
+        anonymousList: true,
+        maskPhone: true
+      },
+      view: "list",
+      selectedId: null,
+      editingId: null,
+      search: "",
+      filterOffice: "all",
+      showDeleteConfirm: false,
+      showPinSetup: false,
+      locked: true,
+      pinInput: "",
+      pinMode: "unlock",
+      pinTemp: "",
+      modal: null
+    };
+
+    let lockTimer = null;
+    const app = document.getElementById("app");
+
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    }
+
+    function safeParse(v, fallback) {
+      try {
+        return JSON.parse(v);
+      } catch {
+        return fallback;
+      }
+    }
+
+    function loadState() {
+      state.clients = safeParse(localStorage.getItem(STORAGE_KEY), []);
+      state.offices = safeParse(localStorage.getItem(OFFICES_KEY), []);
+      state.settings = {
+        autoLockMinutes: 3,
+        anonymousList: true,
+        maskPhone: true,
+        ...safeParse(localStorage.getItem(SETTINGS_KEY), {})
+      };
+      state.locked = true;
+      state.showPinSetup = !localStorage.getItem(PIN_KEY);
+      state.pinMode = state.showPinSetup ? "setup" : "unlock";
+    }
+
+    function persistData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.clients));
+      localStorage.setItem(OFFICES_KEY, JSON.stringify(state.offices));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+    }
+
+    function resetLockTimer() {
+      clearTimeout(lockTimer);
+      if (state.locked) return;
+      const minutes = Number(state.settings.autoLockMinutes || 0);
+      if (!minutes || minutes < 1) return;
+      lockTimer = setTimeout(() => {
+        state.locked = true;
+        state.pinInput = "";
+        render();
+      }, minutes * 60 * 1000);
+    }
+
+    function formatDate(d) {
+      if (!d) return "";
+      const date = new Date(d);
+      if (Number.isNaN(date.getTime())) return d;
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return y + "/" + m + "/" + day;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function maskName(name) {
+      if (!name) return "未登録";
+      if (!state.settings.anonymousList) return name;
+      const parts = name.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        const first = parts[0];
+        const second = parts[1];
+        return first + " " + second.charAt(0);
+      }
+      return name.charAt(0) + "＊＊";
+    }
+
+    function maskPhoneNumber(phone) {
+      if (!phone) return "—";
+      if (!state.settings.maskPhone) return phone;
+      const digits = String(phone);
+      if (digits.length <= 4) return "＊＊＊";
+      return digits.slice(0, 3) + "-****-" + digits.slice(-4);
+    }
+
+    function getInitial(name) {
+      return name ? name.trim().charAt(0) : "?";
+    }
+
+    function getSelectedClient() {
+      return state.clients.find(c => c.id === state.selectedId) || null;
+    }
+
+    function filteredClients() {
+      const q = state.search.trim().toLowerCase();
+      return state.clients.filter(c => {
+        const officeMatch = state.filterOffice === "all" || c.officeName === state.filterOffice;
+        if (!officeMatch) return false;
+        if (!q) return true;
+        return [
+          c.name,
+          c.nameKana,
+          c.address,
+          c.officeName,
+          ...(c.conditions || []),
+          ...(c.diseases || [])
+        ].some(v => String(v || "").toLowerCase().includes(q));
+      });
+    }
+
+    function openView(view) {
+      state.view = view;
+      render();
+    }
+
+    function openDetail(id) {
+      state.selectedId = id;
+      state.view = "detail";
+      render();
+    }
+
+    function openForm(id = null) {
+      state.editingId = id;
+      state.view = "form";
+      render();
+    }
+
+    function closeModal() {
+      state.modal = null;
+      render();
+    }
+
+    function confirmDelete() {
+      const c = getSelectedClient();
+      if (!c) return;
+      state.modal = {
+        type: "delete",
+        title: "削除しますか？",
+        text: "「" + c.name + "」さんの情報を削除します。\nこの操作は取り消せません。"
+      };
+      render();
+    }
+
+    function doDelete() {
+      const id = state.selectedId;
+      state.clients = state.clients.filter(c => c.id !== id);
+      persistData();
+      state.selectedId = null;
+      state.view = "list";
+      closeModal();
+    }
+
+    function exportBackup() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        app: "重訪ケア管理",
+        version: 1,
+        clients: state.clients,
+        offices: state.offices,
+        settings: state.settings
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "care-backup-" + new Date().toISOString().slice(0,10) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      state.modal = {
+        type: "info",
+        title: "バックアップを書き出しました",
+        text: "ダウンロードファイルを安全な場所に保管してください。"
+      };
+      render();
+    }
+
+    function importBackup(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (!data || !Array.isArray(data.clients) || !Array.isArray(data.offices)) {
+            throw new Error("invalid");
+          }
+          state.clients = data.clients;
+          state.offices = data.offices;
+          state.settings = {
+            autoLockMinutes: 3,
+            anonymousList: true,
+            maskPhone: true,
+            ...(data.settings || {})
+          };
+          persistData();
+          state.modal = {
+            type: "info",
+            title: "復元が完了しました",
+            text: "バックアップデータをこの端末に復元しました。"
+          };
+          render();
+        } catch {
+          state.modal = {
+            type: "info",
+            title: "復元できませんでした",
+            text: "JSON形式が正しくないか、対応していないバックアップです。"
+          };
+          render();
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function clearAllData() {
+      state.modal = {
+        type: "dangerConfirm",
+        title: "全データを削除しますか？",
+        text: "利用者・事業所・設定をすべて削除します。\nこの操作は元に戻せません。"
+      };
+      render();
+    }
+
+    function doClearAllData() {
+      state.clients = [];
+      state.offices = [];
+      state.settings = {
+        autoLockMinutes: 3,
+        anonymousList: true,
+        maskPhone: true
+      };
+      state.selectedId = null;
+      state.editingId = null;
+      state.search = "";
+      state.filterOffice = "all";
+      persistData();
+      closeModal();
+      state.view = "list";
+      render();
+    }
+
+    function savePin(pin) {
+      localStorage.setItem(PIN_KEY, pin);
+    }
+
+    function verifyPin(pin) {
+      return localStorage.getItem(PIN_KEY) === pin;
+    }
+
+    function handlePinSubmit() {
+      const pin = state.pinInput.trim();
+      if (!/^\d{4}$/.test(pin)) {
+        return;
+      }
+
+      if (state.pinMode === "setup") {
+        state.pinTemp = pin;
+        state.pinInput = "";
+        state.pinMode = "confirm";
+        render();
+        return;
+      }
+
+      if (state.pinMode === "confirm") {
+        if (pin === state.pinTemp) {
+          savePin(pin);
+          state.showPinSetup = false;
+          state.pinMode = "unlock";
+          state.pinTemp = "";
+          state.pinInput = "";
+          state.locked = false;
+          resetLockTimer();
+          render();
+        } else {
+          state.pinInput = "";
+          state.pinTemp = "";
+          state.pinMode = "setup";
+          state.modal = {
+            type: "info",
+            title: "PINが一致しません",
+            text: "もう一度4桁のPINを設定してください。"
+          };
+          render();
+        }
+        return;
+      }
+
+      if (state.pinMode === "unlock") {
+        if (verifyPin(pin)) {
+          state.locked = false;
+          state.pinInput = "";
+          resetLockTimer();
+          render();
+        } else {
+          state.pinInput = "";
+          state.modal = {
+            type: "info",
+            title: "PINが違います",
+            text: "入力した4桁のPINを確認してください。"
+          };
+          render();
+        }
+      }
+    }
+
+    function renderHeaderTitle() {
+      if (state.view === "detail") return "利用者詳細";
+      if (state.view === "form") return state.editingId ? "編集" : "新規登録";
+      if (state.view === "settings") return "設定";
+      if (state.view === "offices") return "事業所管理";
+      return "";
+    }
+
+    function renderListView() {
+      const clients = filteredClients();
+      const hasData = state.clients.length > 0;
+
+      return `
+        <div class="card search-box">
+          <div>🔍</div>
+          <input id="searchInput" type="text" placeholder="名前・症状・疾患・住所で検索..." value="${escapeHtml(state.search)}" />
+          ${state.search ? '<button id="clearSearchBtn" class="clear-btn">✕</button>' : ''}
+        </div>
+
+        ${state.offices.length ? `
+          <div class="chips">
+            ${["all", ...state.offices].map(o => `
+              <button class="chip ${state.filterOffice === o ? "active" : ""}" data-chip-office="${escapeHtml(o)}">
+                ${o === "all" ? "すべて" : escapeHtml(o)}
+              </button>
+            `).join("")}
+          </div>
+        ` : ""}
+
+        <div class="muted" style="margin:0 4px 12px;">
+          ${
+            state.clients.length === 0
+              ? "利用者を登録しましょう"
+              : clients.length + "名" + (state.search || state.filterOffice !== "all" ? " / 全" + state.clients.length + "名" : "") + " の利用者"
+          }
+        </div>
+
+        ${
+          !hasData
+            ? `
+              <div class="card empty">
+                <div class="empty-icon">👤</div>
+                <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px;">まだ利用者が登録されていません</div>
+                <div style="font-size:13px;">右上の「＋」から新規登録できます</div>
+                <div style="font-size:12px;margin-top:8px;color:var(--accent);">先に事業所を登録しておくと便利です</div>
+              </div>
+            `
+            : clients.length === 0
+              ? `<div class="card empty">該当する利用者がいません</div>`
+              : `
+                <div class="client-list">
+                  ${clients.map(c => `
+                    <button class="client-item" data-open-detail="${c.id}">
+                      <div class="avatar">${escapeHtml(getInitial(c.name))}</div>
+                      <div class="client-main">
+                        <div class="client-name-row">
+                          <div class="client-name">${escapeHtml(maskName(c.name))}</div>
+                          <div class="muted">${escapeHtml(c.age || "")}${c.age ? "歳" : ""}</div>
+                          ${c.disabilityLevel ? `<span class="mini-badge">${escapeHtml(c.disabilityLevel)}</span>` : ""}
+                        </div>
+                        ${c.officeName ? `<div class="office-text">🏢 ${escapeHtml(c.officeName)}</div>` : ""}
+                        ${(c.diseases || []).length ? `
+                          <div class="tag-wrap">
+                            ${(c.diseases || []).slice(0,2).map(d => `<span class="tag purple">${escapeHtml(d.length > 10 ? d.slice(0,10) + "…" : d)}</span>`).join("")}
+                            ${(c.diseases || []).length > 2 ? `<span class="muted">+${(c.diseases || []).length - 2}</span>` : ""}
+                          </div>
+                        ` : ""}
+                        ${(c.conditions || []).length ? `
+                          <div class="tag-wrap">
+                            ${(c.conditions || []).slice(0,3).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+                            ${(c.conditions || []).length > 3 ? `<span class="muted">+${(c.conditions || []).length - 3}</span>` : ""}
+                          </div>
+                        ` : ""}
+                      </div>
+                      <div class="muted" style="margin-top:12px;">›</div>
+                    </button>
+                  `).join("")}
+                </div>
+              `
+        }
+      `;
+    }
+
+    function renderDetailView() {
+      const c = getSelectedClient();
+      if (!c) {
+        return `<div class="card empty">利用者が見つかりません</div>`;
+      }
+
+      return `
+        <div class="card detail-top" style="margin-bottom:12px;">
+          <div class="detail-avatar">${escapeHtml(getInitial(c.name))}</div>
+          <div class="detail-name">${escapeHtml(c.name || "")}</div>
+          ${c.nameKana ? `<div class="detail-kana">${escapeHtml(c.nameKana)}</div>` : ""}
+          <div class="detail-badges">
+            ${c.age ? `<span class="pill">${escapeHtml(c.age)}歳</span>` : ""}
+            ${c.gender ? `<span class="pill">${escapeHtml(c.gender)}</span>` : ""}
+            ${c.disabilityLevel ? `<span class="pill accent">${escapeHtml(c.disabilityLevel)}</span>` : ""}
+          </div>
+          ${c.officeName ? `<div style="margin-top:8px;font-size:12px;color:var(--primary);font-weight:800;">🏢 ${escapeHtml(c.officeName)}</div>` : ""}
+        </div>
+
+        <div class="card section">
+          <div class="section-title">👤 基本情報</div>
+          <div class="info-row"><div class="info-label">住所</div><div class="info-value">${escapeHtml(c.address || "—")}</div></div>
+          <div class="info-row"><div class="info-label">電話番号</div><div class="info-value">${escapeHtml(maskPhoneNumber(c.phone))}</div></div>
+          <div class="info-row"><div class="info-label">生年月日</div><div class="info-value">${escapeHtml(formatDate(c.birthDate) || "—")}</div></div>
+          <div class="info-row"><div class="info-label">受給者番号</div><div class="info-value">${escapeHtml(c.recipientNumber || "—")}</div></div>
+          ${c.notes ? `<div class="text-block">${escapeHtml(c.notes)}</div>` : ""}
+        </div>
+
+        ${(c.diseases || []).length ? `
+          <div class="card section">
+            <div class="section-title purple">🩺 障害・疾患情報</div>
+            ${(c.diseases || []).map(name => {
+              const info = DISEASE_LIST.find(d => d.name === name);
+              const custom = c.diseaseSymptoms && c.diseaseSymptoms[name];
+              return `
+                <div class="disease-card">
+                  <div class="disease-name">${escapeHtml(name)}</div>
+                  ${info ? `<div class="disease-text">${escapeHtml(info.symptoms)}</div>` : ""}
+                  ${custom ? `<div class="disease-text" style="margin-top:8px;padding-top:8px;border-top:1px dashed rgba(108,92,231,.3);"><strong>▶ 個別の症状メモ：</strong><br>${escapeHtml(custom)}</div>` : ""}
+                </div>
+              `;
+            }).join("")}
+          </div>
+        ` : ""}
+
+        <div class="card section">
+          <div class="section-title">📋 処置・ケア内容</div>
+          ${(c.conditions || []).length ? `
+            <div class="tag-wrap" style="margin-bottom:10px;">
+              ${(c.conditions || []).map(tag => `<span class="tag" style="font-size:12px;padding:4px 10px;border-radius:8px;">${escapeHtml(tag)}</span>`).join("")}
+            </div>
+          ` : ""}
+          ${c.treatmentDetails ? `<div class="soft-box text-block" style="margin-top:0;">${escapeHtml(c.treatmentDetails)}</div>` : ""}
+          ${(!(c.conditions || []).length && !c.treatmentDetails) ? `<div class="muted">未登録</div>` : ""}
+        </div>
+
+        ${c.specialNotes ? `
+          <div class="card section">
+            <div class="section-title accent">⭐ 特筆事項</div>
+            <div class="accent-box text-block" style="margin-top:0;">${escapeHtml(c.specialNotes)}</div>
+          </div>
+        ` : ""}
+
+        <div class="card section">
+          <div class="section-title">🚨 緊急連絡先</div>
+          <div class="info-row"><div class="info-label">連絡先名</div><div class="info-value">${escapeHtml(c.emergencyName || "—")}</div></div>
+          <div class="info-row"><div class="info-label">続柄</div><div class="info-value">${escapeHtml(c.emergencyRelation || "—")}</div></div>
+          <div class="info-row"><div class="info-label">電話番号</div><div class="info-value danger">${escapeHtml(maskPhoneNumber(c.emergencyPhone))}</div></div>
+          ${c.emergencyNotes ? `<div class="danger-box text-block" style="margin-top:10px;">${escapeHtml(c.emergencyNotes)}</div>` : ""}
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" style="flex:1;" id="editBtn">編集する</button>
+          <button class="btn ghost-danger" id="deleteBtn">🗑</button>
+        </div>
+      `;
+    }
+
+    function getEditingClient() {
+      if (!state.editingId) {
+        return {
+          id: null,
+          name: "",
+          nameKana: "",
+          age: "",
+          gender: "",
+          birthDate: "",
+          phone: "",
+          address: "",
+          disabilityLevel: "",
+          recipientNumber: "",
+          officeName: "",
+          diseases: [],
+          diseaseSymptoms: {},
+          conditions: [],
+          treatmentDetails: "",
+          notes: "",
+          specialNotes: "",
+          emergencyName: "",
+          emergencyRelation: "",
+          emergencyPhone: "",
+          emergencyNotes: ""
+        };
+      }
+      const found = state.clients.find(c => c.id === state.editingId);
+      return JSON.parse(JSON.stringify(found));
+    }
+
+    function renderFormView() {
+      const c = getEditingClient();
+
+      return `
+        <form id="clientForm" class="card form-card">
+          <div class="section-title">🏢 事業所</div>
+          <div class="field">
+            <label>所属事業所</label>
+            ${
+              state.offices.length
+                ? `
+                  <select class="select" name="officeName">
+                    <option value="">選択してください</option>
+                    ${state.offices.map(o => `<option value="${escapeHtml(o)}" ${c.officeName === o ? "selected" : ""}>${escapeHtml(o)}</option>`).join("")}
+                  </select>
+                `
+                : `<div class="soft-box small-note">設定画面から事業所を先に登録してください</div>`
+            }
+          </div>
+
+          <div class="section-title">👤 基本情報</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>お名前 <span class="req">必須</span></label>
+              <input class="input" name="name" value="${escapeHtml(c.name)}" placeholder="山田 太郎" />
+            </div>
+
+            <div class="field">
+              <label>ふりがな</label>
+              <input class="input" name="nameKana" value="${escapeHtml(c.nameKana)}" placeholder="やまだ たろう" />
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>年齢</label>
+                <input class="input" type="number" name="age" value="${escapeHtml(c.age)}" placeholder="65" />
+              </div>
+              <div class="field">
+                <label>性別</label>
+                <select class="select" name="gender">
+                  <option value="">選択</option>
+                  ${["男性","女性","その他"].map(g => `<option value="${g}" ${c.gender === g ? "selected" : ""}>${g}</option>`).join("")}
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>生年月日</label>
+              <input class="input" type="date" name="birthDate" value="${escapeHtml(c.birthDate)}" />
+            </div>
+
+            <div class="field">
+              <label>電話番号</label>
+              <input class="input" type="tel" name="phone" value="${escapeHtml(c.phone)}" placeholder="090-1234-5678" />
+            </div>
+
+            <div class="field">
+              <label>住所</label>
+              <input class="input" name="address" value="${escapeHtml(c.address)}" placeholder="東京都○○区..." />
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>障害支援区分</label>
+                <select class="select" name="disabilityLevel">
+                  <option value="">選択</option>
+                  ${DISABILITY_LEVELS.map(l => `<option value="${l}" ${c.disabilityLevel === l ? "selected" : ""}>${l}</option>`).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label>受給者番号</label>
+                <input class="input" name="recipientNumber" value="${escapeHtml(c.recipientNumber)}" placeholder="1234567890" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>メモ</label>
+              <textarea class="textarea" name="notes" placeholder="その他の基本情報...">${escapeHtml(c.notes)}</textarea>
+            </div>
+          </div>
+
+          <div class="section-title" style="color:var(--purple);border-bottom-color:rgba(108,92,231,.18);">🩺 障害・疾患</div>
+          <div class="helper">該当する疾患を選択すると、代表的な症状が表示されます。</div>
+          <div class="selector-wrap">
+            ${DISEASE_LIST.map(d => `
+              <button type="button" class="selector purple ${c.diseases.includes(d.name) ? "active" : ""}" data-toggle-disease="${escapeHtml(d.name)}">
+                ${c.diseases.includes(d.name) ? "✓ " : ""}${escapeHtml(d.name.length > 12 ? d.name.slice(0,12) + "…" : d.name)}
+              </button>
+            `).join("")}
+          </div>
+
+          <div class="inline-add">
+            <input class="input" id="customDiseaseInput" placeholder="その他の疾患を追加..." />
+            <button type="button" class="btn" id="addDiseaseBtn" style="background:var(--purple);color:#fff;padding:0 14px;border-radius:10px;">追加</button>
+          </div>
+
+          <div id="diseaseArea">
+            ${(c.diseases || []).map(name => {
+              const info = DISEASE_LIST.find(d => d.name === name);
+              return `
+                <div class="disease-card">
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px;">
+                    <div class="disease-name">${escapeHtml(name)}</div>
+                    <button type="button" class="mini-x" data-remove-disease="${escapeHtml(name)}" style="color:var(--purple);font-size:18px;">×</button>
+                  </div>
+                  ${info ? `
+                    <div class="soft-box" style="background:rgba(255,255,255,.65);margin-bottom:8px;">
+                      <div style="font-size:11px;font-weight:800;color:var(--purple);margin-bottom:4px;">📋 代表的な症状</div>
+                      <div class="disease-text">${escapeHtml(info.symptoms)}</div>
+                    </div>
+                  ` : ""}
+                  <div class="field" style="margin:0;">
+                    <label style="color:var(--purple);">この利用者の個別症状メモ</label>
+                    <textarea class="textarea" data-disease-symptom="${escapeHtml(name)}" placeholder="この利用者さん特有の症状や注意点...">${escapeHtml((c.diseaseSymptoms || {})[name] || "")}</textarea>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <div class="section-title">📋 処置・ケア内容</div>
+          <div class="selector-wrap">
+            ${CONDITION_TAGS.map(tag => `
+              <button type="button" class="selector ${c.conditions.includes(tag) ? "active" : ""}" data-toggle-condition="${escapeHtml(tag)}">
+                ${c.conditions.includes(tag) ? "✓ " : ""}${escapeHtml(tag)}
+              </button>
+            `).join("")}
+          </div>
+
+          <div class="inline-add">
+            <input class="input" id="customConditionInput" placeholder="その他の処置を追加..." />
+            <button type="button" class="btn primary" id="addConditionBtn" style="padding:0 14px;border-radius:10px;">追加</button>
+          </div>
+
+          <div class="custom-tags">
+            ${(c.conditions || []).filter(tag => !CONDITION_TAGS.includes(tag)).map(tag => `
+              <span class="custom-tag">
+                ${escapeHtml(tag)}
+                <button type="button" class="mini-x" data-remove-condition="${escapeHtml(tag)}">×</button>
+              </span>
+            `).join("")}
+          </div>
+
+          <div class="field">
+            <label>処置の詳細</label>
+            <textarea class="textarea" name="treatmentDetails" placeholder="吸引の頻度、体位変換のスケジュール、服薬情報など...">${escapeHtml(c.treatmentDetails)}</textarea>
+          </div>
+
+          <div class="section-title accent">⭐ 特筆事項</div>
+          <div class="helper">特に重要な注意事項や申し送り事項を記載できます。</div>
+          <div class="field">
+            <textarea class="textarea large" name="specialNotes" style="background:rgba(253,240,235,.5);border-color:rgba(212,118,78,.25);" placeholder="この利用者さんについて特に注意すべきこと、引き継ぎ事項など...">${escapeHtml(c.specialNotes)}</textarea>
+          </div>
+
+          <div class="section-title">🚨 緊急連絡先</div>
+          <div class="form-grid">
+            <div class="field-row">
+              <div class="field">
+                <label>連絡先名</label>
+                <input class="input" name="emergencyName" value="${escapeHtml(c.emergencyName)}" placeholder="山田 花子" />
+              </div>
+              <div class="field">
+                <label>続柄</label>
+                <input class="input" name="emergencyRelation" value="${escapeHtml(c.emergencyRelation)}" placeholder="配偶者" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>電話番号</label>
+              <input class="input" type="tel" name="emergencyPhone" value="${escapeHtml(c.emergencyPhone)}" placeholder="090-9876-5432" />
+            </div>
+
+            <div class="field">
+              <label>緊急時の注意事項</label>
+              <textarea class="textarea" name="emergencyNotes" placeholder="緊急時の対応手順、主治医の連絡先など...">${escapeHtml(c.emergencyNotes)}</textarea>
+            </div>
+          </div>
+
+          <div class="btn-row" style="margin-top:24px;">
+            <button type="button" class="btn secondary" id="cancelFormBtn">キャンセル</button>
+            <button type="submit" class="btn primary">${state.editingId ? "保存する" : "登録する"}</button>
+          </div>
+        </form>
+      `;
+    }
+
+    function renderOfficesView() {
+      return `
+        <div class="card section">
+          <div class="section-title">🏢 事業所の登録・管理</div>
+          <div class="helper">利用者登録時に選択できる事業所を管理します。</div>
+
+          ${!state.offices.length ? `<div class="empty" style="padding:24px 10px;">まだ事業所が登録されていません</div>` : ""}
+
+          ${(state.offices || []).map(name => `
+            <div class="office-item">
+              <div class="office-left">
+                <div class="office-badge">${escapeHtml(name.charAt(0))}</div>
+                <div style="font-size:14px;font-weight:700;">${escapeHtml(name)}</div>
+              </div>
+              <button class="mini-x" data-delete-office="${escapeHtml(name)}" style="font-size:18px;color:var(--danger);">🗑</button>
+            </div>
+          `).join("")}
+
+          <div class="inline-add" style="margin-top:12px;">
+            <input id="newOfficeInput" class="input" placeholder="事業所名を入力..." />
+            <button id="addOfficeBtn" class="btn primary" style="padding:0 16px;border-radius:10px;">追加</button>
+          </div>
+
+          <div class="btn-row" style="margin-top:18px;">
+            <button class="btn secondary" id="backToListFromOffice">戻る</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSettingsView() {
+      return `
+        <div class="card section">
+          <div class="section-title">🔐 セキュリティ設定</div>
+
+          <div class="settings-list">
+            <div class="setting-row">
+              <div>
+                <div style="font-size:14px;font-weight:800;">一覧を匿名表示</div>
+                <div class="small-note">一覧画面で氏名を伏せ気味に表示します。</div>
+              </div>
+              <button class="toggle ${state.settings.anonymousList ? "active" : ""}" id="toggleAnonymous"></button>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div style="font-size:14px;font-weight:800;">電話番号をマスク表示</div>
+                <div class="small-note">詳細画面でも電話番号の一部を隠します。</div>
+              </div>
+              <button class="toggle ${state.settings.maskPhone ? "active" : ""}" id="toggleMaskPhone"></button>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div style="font-size:14px;font-weight:800;">自動ロック</div>
+                <div class="small-note">無操作で一定時間後にPINロックします。</div>
+              </div>
+              <select id="autoLockSelect" class="select" style="width:110px;padding:8px 10px;">
+                ${[1,3,5,10,15].map(n => `<option value="${n}" ${Number(state.settings.autoLockMinutes) === n ? "selected" : ""}>${n}分</option>`).join("")}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section">
+          <div class="section-title">💾 データ管理</div>
+          <div class="helper">バックアップは手動で安全な場所へ保管してください。</div>
+
+          <div class="btn-row" style="margin-bottom:10px;">
+            <button class="btn primary" id="exportBtn">バックアップ書き出し</button>
+            <label class="btn secondary" style="display:flex;align-items:center;justify-content:center;">
+              復元
+              <input id="importInput" type="file" accept="application/json" class="hidden" />
+            </label>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn danger" id="clearAllBtn">全データ削除</button>
+          </div>
+        </div>
+
+        <div class="card section">
+          <div class="section-title">📱 使い方メモ</div>
+          <div class="small-note">
+            ・このアプリは端末内保存のみです。<br>
+            ・Safariの「ホーム画面に追加」でアプリ風に使えます。<br>
+            ・端末紛失やiPhone共有には注意してください。<br>
+            ・必要に応じてバックアップを取ってください。
+          </div>
+
+          <div class="btn-row" style="margin-top:18px;">
+            <button class="btn secondary" id="changePinBtn">PINを再設定</button>
+            <button class="btn secondary" id="backToListBtn">戻る</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderModal() {
+      if (!state.modal) return "";
+      const isDanger = state.modal.type === "delete" || state.modal.type === "dangerConfirm";
+      return `
+        <div class="modal" id="modalRoot">
+          <div class="modal-card">
+            <div class="modal-icon ${isDanger ? "danger" : ""}">${isDanger ? "🗑" : "ℹ️"}</div>
+            <div class="modal-title">${escapeHtml(state.modal.title)}</div>
+            <div class="modal-text">${escapeHtml(state.modal.text)}</div>
+            <div class="btn-row">
+              ${
+                state.modal.type === "delete"
+                  ? `
+                    <button class="btn secondary" id="modalCancel">キャンセル</button>
+                    <button class="btn danger" id="modalDelete">削除する</button>
+                  `
+                  : state.modal.type === "dangerConfirm"
+                    ? `
+                      <button class="btn secondary" id="modalCancel">キャンセル</button>
+                      <button class="btn danger" id="modalClearAll">削除する</button>
+                    `
+                    : `
+                      <button class="btn primary" id="modalOk">OK</button>
+                    `
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLockScreen() {
+      if (!state.locked && !state.showPinSetup) return "";
+      let title = "重訪ケア管理";
+      let text = "4桁PINを入力してください";
+      if (state.pinMode === "setup") {
+        title = "PINを設定";
+        text = "初回設定です。4桁の数字を入力してください";
+      } else if (state.pinMode === "confirm") {
+        title = "PINを確認";
+        text = "同じ4桁PINをもう一度入力してください";
+      }
+
+      return `
+        <div class="lock-screen">
+          <div class="lock-card">
+            <div class="lock-badge">🔒</div>
+            <div class="modal-title">${escapeHtml(title)}</div>
+            <div class="modal-text" style="margin-bottom:14px;">${escapeHtml(text)}</div>
+            <input
+              id="pinField"
+              class="pin-input"
+              type="password"
+              inputmode="numeric"
+              maxlength="4"
+              autocomplete="off"
+              value="${escapeHtml(state.pinInput)}"
+              placeholder="••••"
+            />
+            <div class="btn-row">
+              <button class="btn primary" id="pinSubmitBtn">OK</button>
+            </div>
+            <div class="small-note" style="margin-top:14px;">
+              このアプリは通信を行わず、この端末のブラウザ内にのみデータを保存します。
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMainContent() {
+      if (state.view === "detail") return renderDetailView();
+      if (state.view === "form") return renderFormView();
+      if (state.view === "settings") return renderSettingsView();
+      if (state.view === "offices") return renderOfficesView();
+      return renderListView();
+    }
+
+    function render() {
+      const content = `
+        <div class="header">
+          <div class="header-row">
+            ${
+              state.view !== "list"
+                ? `<button class="icon-btn" id="backBtn">‹</button>`
+                : `
+                  <div class="brand">
+                    <div class="brand-icon">💚</div>
+                    <div class="brand-text">
+                      <div class="brand-title">重訪ケア管理</div>
+                      <div class="brand-sub">個人利用専用・端末内保存</div>
+                    </div>
+                  </div>
+                `
+            }
+
+            <div style="font-size:15px;font-weight:700;min-width:56px;text-align:center;">
+              ${escapeHtml(renderHeaderTitle())}
+            </div>
+
+            ${
+              state.view === "list"
+                ? `
+                  <div class="header-actions">
+                    <button class="icon-btn" id="officeBtn">🏢</button>
+                    <button class="icon-btn" id="settingsBtn">⚙️</button>
+                    <button class="icon-btn white" id="addBtn">＋</button>
+                  </div>
+                `
+                : `<div style="width:38px;"></div>`
+            }
+          </div>
+
+          <div class="security-banner">
+            通信なし / ローカル保存 / PINロック対応。実データの扱いには端末管理とバックアップ保管にご注意ください。
+          </div>
+        </div>
+
+        <main class="main">
+          ${renderMainContent()}
+          <div class="footer-space"></div>
+        </main>
+
+        ${renderModal()}
+        ${renderLockScreen()}
+      `;
+
+      app.innerHTML = content;
+      bindEvents();
+    }
+
+    function bindEvents() {
+      const lockScreen = document.getElementById("pinField");
+      if (lockScreen) {
+        lockScreen.focus();
+        lockScreen.addEventListener("input", (e) => {
+          state.pinInput = e.target.value.replace(/\D/g, "").slice(0,4);
+        });
+        lockScreen.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handlePinSubmit();
+          }
+        });
+      }
+
+      const pinSubmitBtn = document.getElementById("pinSubmitBtn");
+      if (pinSubmitBtn) pinSubmitBtn.onclick = handlePinSubmit;
+
+      if (state.locked || state.showPinSetup) return;
+
+      resetLockTimer();
+
+      const activityEvents = ["click","input","change","keydown","touchstart"];
+      activityEvents.forEach(ev => {
+        document.addEventListener(ev, resetLockTimer, { once: true });
+      });
+
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.oninput = (e) => {
+          state.search = e.target.value;
+          render();
+        };
+      }
+
+      const clearSearchBtn = document.getElementById("clearSearchBtn");
+      if (clearSearchBtn) {
+        clearSearchBtn.onclick = () => {
+          state.search = "";
+          render();
+        };
+      }
+
+      document.querySelectorAll("[data-chip-office]").forEach(btn => {
+        btn.onclick = () => {
+          state.filterOffice = btn.getAttribute("data-chip-office");
+          render();
+        };
+      });
+
+      document.querySelectorAll("[data-open-detail]").forEach(btn => {
+        btn.onclick = () => openDetail(btn.getAttribute("data-open-detail"));
+      });
+
+      const backBtn = document.getElementById("backBtn");
+      if (backBtn) {
+        backBtn.onclick = () => {
+          if (state.view === "form" && state.editingId) {
+            state.view = "detail";
+          } else {
+            state.view = "list";
+          }
+          render();
+        };
+      }
+
+      const addBtn = document.getElementById("addBtn");
+      if (addBtn) addBtn.onclick = () => openForm();
+
+      const officeBtn = document.getElementById("officeBtn");
+      if (officeBtn) officeBtn.onclick = () => openView("offices");
+
+      const settingsBtn = document.getElementById("settingsBtn");
+      if (settingsBtn) settingsBtn.onclick = () => openView("settings");
+
+      const editBtn = document.getElementById("editBtn");
+      if (editBtn) editBtn.onclick = () => openForm(state.selectedId);
+
+      const deleteBtn = document.getElementById("deleteBtn");
+      if (deleteBtn) deleteBtn.onclick = confirmDelete;
+
+      const modalCancel = document.getElementById("modalCancel");
+      if (modalCancel) modalCancel.onclick = closeModal;
+
+      const modalOk = document.getElementById("modalOk");
+      if (modalOk) modalOk.onclick = closeModal;
+
+      const modalDelete = document.getElementById("modalDelete");
+      if (modalDelete) modalDelete.onclick = doDelete;
+
+      const modalClearAll = document.getElementById("modalClearAll");
+      if (modalClearAll) modalClearAll.onclick = doClearAllData;
+
+      const addOfficeBtn = document.getElementById("addOfficeBtn");
+      if (addOfficeBtn) {
+        addOfficeBtn.onclick = () => {
+          const input = document.getElementById("newOfficeInput");
+          const value = (input.value || "").trim();
+          if (!value) return;
+          if (!state.offices.includes(value)) {
+            state.offices.push(value);
+            persistData();
+          }
+          render();
+        };
+      }
+
+      document.querySelectorAll("[data-delete-office]").forEach(btn => {
+        btn.onclick = () => {
+          const name = btn.getAttribute("data-delete-office");
+          state.offices = state.offices.filter(o => o !== name);
+          state.clients = state.clients.map(c => c.officeName === name ? { ...c, officeName: "" } : c);
+          persistData();
+          render();
+        };
+      });
+
+      const backToListFromOffice = document.getElementById("backToListFromOffice");
+      if (backToListFromOffice) backToListFromOffice.onclick = () => openView("list");
+
+      const toggleAnonymous = document.getElementById("toggleAnonymous");
+      if (toggleAnonymous) {
+        toggleAnonymous.onclick = () => {
+          state.settings.anonymousList = !state.settings.anonymousList;
+          persistData();
+          render();
+        };
+      }
+
+      const toggleMaskPhone = document.getElementById("toggleMaskPhone");
+      if (toggleMaskPhone) {
+        toggleMaskPhone.onclick = () => {
+          state.settings.maskPhone = !state.settings.maskPhone;
+          persistData();
+          render();
+        };
+      }
+
+      const autoLockSelect = document.getElementById("autoLockSelect");
+      if (autoLockSelect) {
+        autoLockSelect.onchange = (e) => {
+          state.settings.autoLockMinutes = Number(e.target.value);
+          persistData();
+          resetLockTimer();
+        };
+      }
+
+      const exportBtn = document.getElementById("exportBtn");
+      if (exportBtn) exportBtn.onclick = exportBackup;
+
+      const importInput = document.getElementById("importInput");
+      if (importInput) {
+        importInput.onchange = (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (file) importBackup(file);
+        };
+      }
+
+      const clearAllBtn = document.getElementById("clearAllBtn");
+      if (clearAllBtn) clearAllBtn.onclick = clearAllData;
+
+      const backToListBtn = document.getElementById("backToListBtn");
+      if (backToListBtn) backToListBtn.onclick = () => openView("list");
+
+      const changePinBtn = document.getElementById("changePinBtn");
+      if (changePinBtn) {
+        changePinBtn.onclick = () => {
+          state.locked = true;
+          state.pinMode = "setup";
+          state.pinTemp = "";
+          state.pinInput = "";
+          render();
+        };
+      }
+
+      const clientForm = document.getElementById("clientForm");
+      if (clientForm) {
+        const working = getEditingClient();
+
+        document.querySelectorAll("[data-toggle-disease]").forEach(btn => {
+          btn.onclick = () => {
+            const name = btn.getAttribute("data-toggle-disease");
+            if (working.diseases.includes(name)) {
+              working.diseases = working.diseases.filter(d => d !== name);
+              delete working.diseaseSymptoms[name];
+            } else {
+              working.diseases.push(name);
+            }
+            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
+            state.editingId = "__temp__";
+            tempClientForRender = working;
+            renderTempForm(working);
+          };
+        });
+
+        document.querySelectorAll("[data-remove-disease]").forEach(btn => {
+          btn.onclick = () => {
+            const name = btn.getAttribute("data-remove-disease");
+            working.diseases = working.diseases.filter(d => d !== name);
+            delete working.diseaseSymptoms[name];
+            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
+            state.editingId = "__temp__";
+            tempClientForRender = working;
+            renderTempForm(working);
+          };
+        });
+
+        document.querySelectorAll("[data-toggle-condition]").forEach(btn => {
+          btn.onclick = () => {
+            const tag = btn.getAttribute("data-toggle-condition");
+            if (working.conditions.includes(tag)) {
+              working.conditions = working.conditions.filter(t => t !== tag);
+            } else {
+              working.conditions.push(tag);
+            }
+            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
+            state.editingId = "__temp__";
+            tempClientForRender = working;
+            renderTempForm(working);
+          };
+        });
+
+        document.querySelectorAll("[data-remove-condition]").forEach(btn => {
+          btn.onclick = () => {
+            const tag = btn.getAttribute("data-remove-condition");
+            working.conditions = working.conditions.filter(t => t !== tag);
+            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
+            state.editingId = "__temp__";
+            tempClientForRender = working;
+            renderTempForm(working);
+          };
+        });
+
+        document.querySelectorAll("[data-disease-symptom]").forEach(el => {
+          el.oninput = () => {
+            const name = el.getAttribute("data-disease-symptom");
+            working.diseaseSymptoms[name] = el.value;
+            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
+          };
+        });
+
+        const addDiseaseBtn = document.getElementById("addDiseaseBtn");
+        if (addDiseaseBtn) {
+          addDiseaseBtn.onclick = () => {
+            const input = document.getElementById("customDiseaseInput");
+            const value = (input.value || "").trim();
+            if (!value) return;
+            if (!working.diseases.includes(value)) working.diseases.push(value);
+            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
+            state.editingId = "__temp__";
+            tempClientForRender = working;
+            renderTempForm(working);
+          };
+        }
+
+        const addConditionBtn = document.getElementById("addConditionBtn");
+        if (addConditionBtn) {
+          addConditionBtn.onclick = () => {
+            const input = document.getElementById("customConditionInput");
+            const value = (input.value || "").trim();
+            if (!value) return;
+            if (!working.conditions.includes(value)) working.conditions.push(value);
+            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
+            state.editingId = "__temp__";
+            tempClientForRender = working;
+            renderTempForm(working);
+          };
+        }
+
+        const cancelFormBtn = document.getElementById("cancelFormBtn");
+        if (cancelFormBtn) {
+          cancelFormBtn.onclick = () => {
+            sessionStorage.removeItem("tempFormClient");
+            if (state.selectedId && state.clients.find(c => c.id === state.selectedId)) {
+              state.view = "detail";
+            } else {
+              state.view = "list";
+            }
+            state.editingId = state.editingId === "__temp__" ? null : state.editingId;
+            tempClientForRender = null;
+            render();
+          };
+        }
+
+        clientForm.onsubmit = (e) => {
+          e.preventDefault();
+          const fd = new FormData(clientForm);
+
+          const draft = tempClientForRender || getEditingClient();
+          const client = {
+            id: draft.id && draft.id !== "__temp__" ? draft.id : null,
+            name: String(fd.get("name") || "").trim(),
+            nameKana: String(fd.get("nameKana") || "").trim(),
+            age: String(fd.get("age") || "").trim(),
+            gender: String(fd.get("gender") || "").trim(),
+            birthDate: String(fd.get("birthDate") || "").trim(),
+            phone: String(fd.get("phone") || "").trim(),
+            address: String(fd.get("address") || "").trim(),
+            disabilityLevel: String(fd.get("disabilityLevel") || "").trim(),
+            recipientNumber: String(fd.get("recipientNumber") || "").trim(),
+            officeName: String(fd.get("officeName") || "").trim(),
+            diseases: draft.diseases || [],
+            diseaseSymptoms: draft.diseaseSymptoms || {},
+            conditions: draft.conditions || [],
+            treatmentDetails: String(fd.get("treatmentDetails") || "").trim(),
+            notes: String(fd.get("notes") || "").trim(),
+            specialNotes: String(fd.get("specialNotes") || "").trim(),
+            emergencyName: String(fd.get("emergencyName") || "").trim(),
+            emergencyRelation: String(fd.get("emergencyRelation") || "").trim(),
+            emergencyPhone: String(fd.get("emergencyPhone") || "").trim(),
+            emergencyNotes: String(fd.get("emergencyNotes") || "").trim()
+          };
+
+          if (!client.name) {
+            state.modal = {
+              type: "info",
+              title: "お名前を入力してください",
+              text: "利用者登録にはお名前が必要です。"
+            };
+            render();
+            return;
+          }
+
+          if (client.id) {
+            state.clients = state.clients.map(c => c.id === client.id ? client : c);
+            state.selectedId = client.id;
+          } else {
+            client.id = generateId();
+            client.createdAt = new Date().toISOString();
+            state.clients.unshift(client);
+            state.selectedId = client.id;
+          }
+
+          persistData();
+          sessionStorage.removeItem("tempFormClient");
+          tempClientForRender = null;
+          state.editingId = null;
+          state.view = "detail";
+          render();
+        };
+      }
+    }
+
+    let tempClientForRender = null;
+
+    function renderTempForm(client) {
+      tempClientForRender = client;
+      render();
+    }
+
+    const originalGetEditingClient = getEditingClient;
+    getEditingClient = function() {
+      if (tempClientForRender) return JSON.parse(JSON.stringify(tempClientForRender));
+      if (state.editingId === "__temp__") {
+        const temp = safeParse(sessionStorage.getItem("tempFormClient"), null);
+        if (temp) return temp;
+      }
+      return originalGetEditingClient();
+    };
+
+    window.addEventListener("visibilitychange", () => {
+      if (document.hidden && !state.locked && !state.showPinSetup) {
+        state.locked = true;
+        state.pinInput = "";
+        render();
+      }
+    });
+
+    window.addEventListener("beforeunload", () => {
+      persistData();
+    });
+
+    loadState();
+    render();
+  </script>
+</body>
+</html>
