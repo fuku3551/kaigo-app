@@ -2,10 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="theme-color" content="#2B6B5E" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -97,10 +94,6 @@
       flex-shrink:0;
     }
 
-    .brand-text{
-      min-width:0;
-    }
-
     .brand-title{
       font-size:17px;
       font-weight:800;
@@ -112,9 +105,6 @@
       margin-top:2px;
       font-size:11px;
       opacity:.8;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
 
     .header-actions{
@@ -143,7 +133,7 @@
     }
 
     .main{
-      max-width:720px;
+      max-width:760px;
       margin:0 auto;
       padding:14px 14px 110px;
     }
@@ -165,6 +155,7 @@
       align-items:center;
       gap:10px;
       padding:10px 14px;
+      margin-bottom:10px;
     }
 
     .search-box input{
@@ -192,6 +183,7 @@
       overflow:auto;
       padding:2px 0 10px;
       -webkit-overflow-scrolling:touch;
+      margin-bottom:6px;
     }
 
     .chip{
@@ -327,6 +319,7 @@
     .detail-top{
       text-align:center;
       padding:18px;
+      margin-bottom:12px;
     }
 
     .detail-avatar{
@@ -469,6 +462,7 @@
     .disease-text{
       font-size:12px;
       line-height:1.7;
+      white-space:pre-wrap;
     }
 
     .actions{
@@ -747,7 +741,7 @@
     .modal{
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,.5);
+      background:rgba(0,0,0,0.5);
       display:flex;
       align-items:center;
       justify-content:center;
@@ -850,10 +844,6 @@
       display:none !important;
     }
 
-    .footer-space{
-      height:20px;
-    }
-
     @media (max-width:420px){
       .field-row{
         flex-direction:column;
@@ -868,13 +858,13 @@
   </style>
 </head>
 <body>
-  <div id="app" class="app"></div>
+  <div id="app"></div>
 
   <script>
-    const STORAGE_KEY = "care_secure_clients_v1";
-    const OFFICES_KEY = "care_secure_offices_v1";
-    const SETTINGS_KEY = "care_secure_settings_v1";
-    const PIN_KEY = "care_secure_pin_v1";
+    const STORAGE_KEY = "care_app_clients_v2";
+    const OFFICES_KEY = "care_app_offices_v2";
+    const SETTINGS_KEY = "care_app_settings_v2";
+    const PIN_KEY = "care_app_pin_v2";
 
     const DISEASE_LIST = [
       {
@@ -923,7 +913,9 @@
 
     const DISABILITY_LEVELS = ["区分1","区分2","区分3","区分4","区分5","区分6"];
 
-    const state = {
+    const app = document.getElementById("app");
+
+    let state = {
       clients: [],
       offices: [],
       settings: {
@@ -933,28 +925,21 @@
       },
       view: "list",
       selectedId: null,
-      editingId: null,
+      formData: null,
       search: "",
       filterOffice: "all",
-      showDeleteConfirm: false,
-      showPinSetup: false,
+      modal: null,
       locked: true,
       pinInput: "",
-      pinMode: "unlock",
-      pinTemp: "",
-      modal: null
+      pinStage: "unlock",
+      firstPin: ""
     };
 
     let lockTimer = null;
-    const app = document.getElementById("app");
 
-    function generateId() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-    }
-
-    function safeParse(v, fallback) {
+    function safeParse(value, fallback) {
       try {
-        return JSON.parse(v);
+        return JSON.parse(value);
       } catch {
         return fallback;
       }
@@ -969,37 +954,24 @@
         maskPhone: true,
         ...safeParse(localStorage.getItem(SETTINGS_KEY), {})
       };
-      state.locked = true;
-      state.showPinSetup = !localStorage.getItem(PIN_KEY);
-      state.pinMode = state.showPinSetup ? "setup" : "unlock";
+
+      if (localStorage.getItem(PIN_KEY)) {
+        state.locked = true;
+        state.pinStage = "unlock";
+      } else {
+        state.locked = true;
+        state.pinStage = "setup";
+      }
     }
 
-    function persistData() {
+    function persistAll() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.clients));
       localStorage.setItem(OFFICES_KEY, JSON.stringify(state.offices));
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
     }
 
-    function resetLockTimer() {
-      clearTimeout(lockTimer);
-      if (state.locked) return;
-      const minutes = Number(state.settings.autoLockMinutes || 0);
-      if (!minutes || minutes < 1) return;
-      lockTimer = setTimeout(() => {
-        state.locked = true;
-        state.pinInput = "";
-        render();
-      }, minutes * 60 * 1000);
-    }
-
-    function formatDate(d) {
-      if (!d) return "";
-      const date = new Date(d);
-      if (Number.isNaN(date.getTime())) return d;
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return y + "/" + m + "/" + day;
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
     }
 
     function escapeHtml(str) {
@@ -1011,24 +983,35 @@
         .replaceAll("'", "&#39;");
     }
 
+    function formatDate(d) {
+      if (!d) return "";
+      const date = new Date(d);
+      if (Number.isNaN(date.getTime())) return d;
+      return (
+        date.getFullYear() +
+        "/" +
+        String(date.getMonth() + 1).padStart(2, "0") +
+        "/" +
+        String(date.getDate()).padStart(2, "0")
+      );
+    }
+
     function maskName(name) {
       if (!name) return "未登録";
       if (!state.settings.anonymousList) return name;
       const parts = name.trim().split(/\s+/);
       if (parts.length >= 2) {
-        const first = parts[0];
-        const second = parts[1];
-        return first + " " + second.charAt(0);
+        return parts[0] + " " + parts[1].charAt(0);
       }
       return name.charAt(0) + "＊＊";
     }
 
-    function maskPhoneNumber(phone) {
+    function maskPhone(phone) {
       if (!phone) return "—";
       if (!state.settings.maskPhone) return phone;
-      const digits = String(phone);
-      if (digits.length <= 4) return "＊＊＊";
-      return digits.slice(0, 3) + "-****-" + digits.slice(-4);
+      const s = String(phone);
+      if (s.length <= 4) return "＊＊＊";
+      return s.slice(0, 3) + "-****-" + s.slice(-4);
     }
 
     function getInitial(name) {
@@ -1039,25 +1022,101 @@
       return state.clients.find(c => c.id === state.selectedId) || null;
     }
 
+    function getFormData() {
+      if (state.formData) return state.formData;
+      return createEmptyClient();
+    }
+
+    function createEmptyClient() {
+      return {
+        id: null,
+        name: "",
+        nameKana: "",
+        age: "",
+        gender: "",
+        birthDate: "",
+        phone: "",
+        address: "",
+        disabilityLevel: "",
+        recipientNumber: "",
+        officeName: "",
+        diseases: [],
+        diseaseSymptoms: {},
+        conditions: [],
+        treatmentDetails: "",
+        notes: "",
+        specialNotes: "",
+        emergencyName: "",
+        emergencyRelation: "",
+        emergencyPhone: "",
+        emergencyNotes: ""
+      };
+    }
+
+    function startNewForm() {
+      state.formData = createEmptyClient();
+      state.view = "form";
+      render();
+    }
+
+    function startEditForm(id) {
+      const found = state.clients.find(c => c.id === id);
+      if (!found) return;
+      state.formData = JSON.parse(JSON.stringify(found));
+      state.view = "form";
+      render();
+    }
+
+    function closeForm() {
+      state.formData = null;
+      if (state.selectedId && state.clients.find(c => c.id === state.selectedId)) {
+        state.view = "detail";
+      } else {
+        state.view = "list";
+      }
+      render();
+    }
+
+    function resetLockTimer() {
+      clearTimeout(lockTimer);
+      if (state.locked) return;
+      const minutes = Number(state.settings.autoLockMinutes || 0);
+      if (!minutes) return;
+      lockTimer = setTimeout(() => {
+        state.locked = true;
+        state.pinInput = "";
+        state.pinStage = "unlock";
+        render();
+      }, minutes * 60 * 1000);
+    }
+
+    function attachActivityReset() {
+      const events = ["click","keydown","touchstart","input","change"];
+      events.forEach(eventName => {
+        document.addEventListener(eventName, resetLockTimer, { passive: true });
+      });
+    }
+
     function filteredClients() {
       const q = state.search.trim().toLowerCase();
       return state.clients.filter(c => {
-        const officeMatch = state.filterOffice === "all" || c.officeName === state.filterOffice;
-        if (!officeMatch) return false;
+        const officeOk = state.filterOffice === "all" || c.officeName === state.filterOffice;
+        if (!officeOk) return false;
         if (!q) return true;
-        return [
+        const haystack = [
           c.name,
           c.nameKana,
           c.address,
           c.officeName,
           ...(c.conditions || []),
           ...(c.diseases || [])
-        ].some(v => String(v || "").toLowerCase().includes(q));
+        ].join(" ").toLowerCase();
+        return haystack.includes(q);
       });
     }
 
-    function openView(view) {
-      state.view = view;
+    function openList() {
+      state.view = "list";
       render();
     }
 
@@ -1067,122 +1126,23 @@
       render();
     }
 
-    function openForm(id = null) {
-      state.editingId = id;
-      state.view = "form";
+    function openSettings() {
+      state.view = "settings";
+      render();
+    }
+
+    function openOffices() {
+      state.view = "offices";
+      render();
+    }
+
+    function showModal(type, title, text) {
+      state.modal = { type, title, text };
       render();
     }
 
     function closeModal() {
       state.modal = null;
-      render();
-    }
-
-    function confirmDelete() {
-      const c = getSelectedClient();
-      if (!c) return;
-      state.modal = {
-        type: "delete",
-        title: "削除しますか？",
-        text: "「" + c.name + "」さんの情報を削除します。\nこの操作は取り消せません。"
-      };
-      render();
-    }
-
-    function doDelete() {
-      const id = state.selectedId;
-      state.clients = state.clients.filter(c => c.id !== id);
-      persistData();
-      state.selectedId = null;
-      state.view = "list";
-      closeModal();
-    }
-
-    function exportBackup() {
-      const payload = {
-        exportedAt: new Date().toISOString(),
-        app: "重訪ケア管理",
-        version: 1,
-        clients: state.clients,
-        offices: state.offices,
-        settings: state.settings
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "care-backup-" + new Date().toISOString().slice(0,10) + ".json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      state.modal = {
-        type: "info",
-        title: "バックアップを書き出しました",
-        text: "ダウンロードファイルを安全な場所に保管してください。"
-      };
-      render();
-    }
-
-    function importBackup(file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const data = JSON.parse(reader.result);
-          if (!data || !Array.isArray(data.clients) || !Array.isArray(data.offices)) {
-            throw new Error("invalid");
-          }
-          state.clients = data.clients;
-          state.offices = data.offices;
-          state.settings = {
-            autoLockMinutes: 3,
-            anonymousList: true,
-            maskPhone: true,
-            ...(data.settings || {})
-          };
-          persistData();
-          state.modal = {
-            type: "info",
-            title: "復元が完了しました",
-            text: "バックアップデータをこの端末に復元しました。"
-          };
-          render();
-        } catch {
-          state.modal = {
-            type: "info",
-            title: "復元できませんでした",
-            text: "JSON形式が正しくないか、対応していないバックアップです。"
-          };
-          render();
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function clearAllData() {
-      state.modal = {
-        type: "dangerConfirm",
-        title: "全データを削除しますか？",
-        text: "利用者・事業所・設定をすべて削除します。\nこの操作は元に戻せません。"
-      };
-      render();
-    }
-
-    function doClearAllData() {
-      state.clients = [];
-      state.offices = [];
-      state.settings = {
-        autoLockMinutes: 3,
-        anonymousList: true,
-        maskPhone: true
-      };
-      state.selectedId = null;
-      state.editingId = null;
-      state.search = "";
-      state.filterOffice = "all";
-      persistData();
-      closeModal();
-      state.view = "list";
       render();
     }
 
@@ -1194,65 +1154,52 @@
       return localStorage.getItem(PIN_KEY) === pin;
     }
 
-    function handlePinSubmit() {
+    function submitPin() {
       const pin = state.pinInput.trim();
-      if (!/^\d{4}$/.test(pin)) {
-        return;
-      }
+      if (!/^\d{4}$/.test(pin)) return;
 
-      if (state.pinMode === "setup") {
-        state.pinTemp = pin;
+      if (state.pinStage === "setup") {
+        state.firstPin = pin;
         state.pinInput = "";
-        state.pinMode = "confirm";
+        state.pinStage = "confirm";
         render();
         return;
       }
 
-      if (state.pinMode === "confirm") {
-        if (pin === state.pinTemp) {
-          savePin(pin);
-          state.showPinSetup = false;
-          state.pinMode = "unlock";
-          state.pinTemp = "";
+      if (state.pinStage === "confirm") {
+        if (pin !== state.firstPin) {
           state.pinInput = "";
-          state.locked = false;
-          resetLockTimer();
-          render();
-        } else {
-          state.pinInput = "";
-          state.pinTemp = "";
-          state.pinMode = "setup";
-          state.modal = {
-            type: "info",
-            title: "PINが一致しません",
-            text: "もう一度4桁のPINを設定してください。"
-          };
-          render();
+          state.firstPin = "";
+          state.pinStage = "setup";
+          showModal("info", "PINが一致しません", "もう一度4桁のPINを設定してください。");
+          return;
         }
+        savePin(pin);
+        state.locked = false;
+        state.pinInput = "";
+        state.firstPin = "";
+        state.pinStage = "unlock";
+        render();
+        resetLockTimer();
         return;
       }
 
-      if (state.pinMode === "unlock") {
+      if (state.pinStage === "unlock") {
         if (verifyPin(pin)) {
           state.locked = false;
           state.pinInput = "";
-          resetLockTimer();
           render();
+          resetLockTimer();
         } else {
           state.pinInput = "";
-          state.modal = {
-            type: "info",
-            title: "PINが違います",
-            text: "入力した4桁のPINを確認してください。"
-          };
-          render();
+          showModal("info", "PINが違います", "入力した4桁のPINを確認してください。");
         }
       }
     }
 
     function renderHeaderTitle() {
       if (state.view === "detail") return "利用者詳細";
-      if (state.view === "form") return state.editingId ? "編集" : "新規登録";
+      if (state.view === "form") return state.formData && state.formData.id ? "編集" : "新規登録";
       if (state.view === "settings") return "設定";
       if (state.view === "offices") return "事業所管理";
       return "";
@@ -1260,89 +1207,81 @@
 
     function renderListView() {
       const clients = filteredClients();
-      const hasData = state.clients.length > 0;
+      const total = state.clients.length;
 
       return `
         <div class="card search-box">
           <div>🔍</div>
           <input id="searchInput" type="text" placeholder="名前・症状・疾患・住所で検索..." value="${escapeHtml(state.search)}" />
-          ${state.search ? '<button id="clearSearchBtn" class="clear-btn">✕</button>' : ''}
+          ${state.search ? '<button id="clearSearchBtn" class="clear-btn">✕</button>' : ""}
         </div>
 
         ${state.offices.length ? `
           <div class="chips">
-            ${["all", ...state.offices].map(o => `
-              <button class="chip ${state.filterOffice === o ? "active" : ""}" data-chip-office="${escapeHtml(o)}">
-                ${o === "all" ? "すべて" : escapeHtml(o)}
+            ${["all", ...state.offices].map(name => `
+              <button class="chip ${state.filterOffice === name ? "active" : ""}" data-office-filter="${escapeHtml(name)}">
+                ${name === "all" ? "すべて" : escapeHtml(name)}
               </button>
             `).join("")}
           </div>
         ` : ""}
 
         <div class="muted" style="margin:0 4px 12px;">
-          ${
-            state.clients.length === 0
-              ? "利用者を登録しましょう"
-              : clients.length + "名" + (state.search || state.filterOffice !== "all" ? " / 全" + state.clients.length + "名" : "") + " の利用者"
-          }
+          ${total === 0 ? "利用者を登録しましょう" : `${clients.length}名${state.search || state.filterOffice !== "all" ? ` / 全${total}名` : ""} の利用者`}
         </div>
 
         ${
-          !hasData
-            ? `
-              <div class="card empty">
-                <div class="empty-icon">👤</div>
-                <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px;">まだ利用者が登録されていません</div>
-                <div style="font-size:13px;">右上の「＋」から新規登録できます</div>
-                <div style="font-size:12px;margin-top:8px;color:var(--accent);">先に事業所を登録しておくと便利です</div>
+          total === 0
+          ? `
+            <div class="card empty">
+              <div class="empty-icon">👤</div>
+              <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px;">まだ利用者が登録されていません</div>
+              <div style="font-size:13px;">右上の「＋」から新規登録できます</div>
+              <div style="font-size:12px;margin-top:8px;color:var(--accent);">先に事業所を登録しておくと便利です</div>
+            </div>
+          `
+          : clients.length === 0
+            ? `<div class="card empty">該当する利用者がいません</div>`
+            : `
+              <div class="client-list">
+                ${clients.map(c => `
+                  <button class="client-item" data-open-detail="${c.id}">
+                    <div class="avatar">${escapeHtml(getInitial(c.name))}</div>
+                    <div class="client-main">
+                      <div class="client-name-row">
+                        <div class="client-name">${escapeHtml(maskName(c.name))}</div>
+                        <div class="muted">${c.age ? escapeHtml(c.age) + "歳" : ""}</div>
+                        ${c.disabilityLevel ? `<span class="mini-badge">${escapeHtml(c.disabilityLevel)}</span>` : ""}
+                      </div>
+                      ${c.officeName ? `<div class="office-text">🏢 ${escapeHtml(c.officeName)}</div>` : ""}
+                      ${(c.diseases || []).length ? `
+                        <div class="tag-wrap">
+                          ${(c.diseases || []).slice(0,2).map(d => `<span class="tag purple">${escapeHtml(d.length > 10 ? d.slice(0,10) + "…" : d)}</span>`).join("")}
+                        </div>
+                      ` : ""}
+                      ${(c.conditions || []).length ? `
+                        <div class="tag-wrap">
+                          ${(c.conditions || []).slice(0,3).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+                        </div>
+                      ` : ""}
+                    </div>
+                    <div class="muted" style="margin-top:12px;">›</div>
+                  </button>
+                `).join("")}
               </div>
             `
-            : clients.length === 0
-              ? `<div class="card empty">該当する利用者がいません</div>`
-              : `
-                <div class="client-list">
-                  ${clients.map(c => `
-                    <button class="client-item" data-open-detail="${c.id}">
-                      <div class="avatar">${escapeHtml(getInitial(c.name))}</div>
-                      <div class="client-main">
-                        <div class="client-name-row">
-                          <div class="client-name">${escapeHtml(maskName(c.name))}</div>
-                          <div class="muted">${escapeHtml(c.age || "")}${c.age ? "歳" : ""}</div>
-                          ${c.disabilityLevel ? `<span class="mini-badge">${escapeHtml(c.disabilityLevel)}</span>` : ""}
-                        </div>
-                        ${c.officeName ? `<div class="office-text">🏢 ${escapeHtml(c.officeName)}</div>` : ""}
-                        ${(c.diseases || []).length ? `
-                          <div class="tag-wrap">
-                            ${(c.diseases || []).slice(0,2).map(d => `<span class="tag purple">${escapeHtml(d.length > 10 ? d.slice(0,10) + "…" : d)}</span>`).join("")}
-                            ${(c.diseases || []).length > 2 ? `<span class="muted">+${(c.diseases || []).length - 2}</span>` : ""}
-                          </div>
-                        ` : ""}
-                        ${(c.conditions || []).length ? `
-                          <div class="tag-wrap">
-                            ${(c.conditions || []).slice(0,3).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
-                            ${(c.conditions || []).length > 3 ? `<span class="muted">+${(c.conditions || []).length - 3}</span>` : ""}
-                          </div>
-                        ` : ""}
-                      </div>
-                      <div class="muted" style="margin-top:12px;">›</div>
-                    </button>
-                  `).join("")}
-                </div>
-              `
         }
       `;
     }
 
     function renderDetailView() {
       const c = getSelectedClient();
-      if (!c) {
-        return `<div class="card empty">利用者が見つかりません</div>`;
-      }
+      if (!c) return `<div class="card empty">利用者が見つかりません</div>`;
 
       return `
-        <div class="card detail-top" style="margin-bottom:12px;">
+        <div class="card detail-top">
           <div class="detail-avatar">${escapeHtml(getInitial(c.name))}</div>
-          <div class="detail-name">${escapeHtml(c.name || "")}</div>
+          <div class="detail-name">${escapeHtml(c.name)}</div>
           ${c.nameKana ? `<div class="detail-kana">${escapeHtml(c.nameKana)}</div>` : ""}
           <div class="detail-badges">
             ${c.age ? `<span class="pill">${escapeHtml(c.age)}歳</span>` : ""}
@@ -1355,7 +1294,7 @@
         <div class="card section">
           <div class="section-title">👤 基本情報</div>
           <div class="info-row"><div class="info-label">住所</div><div class="info-value">${escapeHtml(c.address || "—")}</div></div>
-          <div class="info-row"><div class="info-label">電話番号</div><div class="info-value">${escapeHtml(maskPhoneNumber(c.phone))}</div></div>
+          <div class="info-row"><div class="info-label">電話番号</div><div class="info-value">${escapeHtml(maskPhone(c.phone))}</div></div>
           <div class="info-row"><div class="info-label">生年月日</div><div class="info-value">${escapeHtml(formatDate(c.birthDate) || "—")}</div></div>
           <div class="info-row"><div class="info-label">受給者番号</div><div class="info-value">${escapeHtml(c.recipientNumber || "—")}</div></div>
           ${c.notes ? `<div class="text-block">${escapeHtml(c.notes)}</div>` : ""}
@@ -1366,7 +1305,7 @@
             <div class="section-title purple">🩺 障害・疾患情報</div>
             ${(c.diseases || []).map(name => {
               const info = DISEASE_LIST.find(d => d.name === name);
-              const custom = c.diseaseSymptoms && c.diseaseSymptoms[name];
+              const custom = (c.diseaseSymptoms || {})[name] || "";
               return `
                 <div class="disease-card">
                   <div class="disease-name">${escapeHtml(name)}</div>
@@ -1400,49 +1339,19 @@
           <div class="section-title">🚨 緊急連絡先</div>
           <div class="info-row"><div class="info-label">連絡先名</div><div class="info-value">${escapeHtml(c.emergencyName || "—")}</div></div>
           <div class="info-row"><div class="info-label">続柄</div><div class="info-value">${escapeHtml(c.emergencyRelation || "—")}</div></div>
-          <div class="info-row"><div class="info-label">電話番号</div><div class="info-value danger">${escapeHtml(maskPhoneNumber(c.emergencyPhone))}</div></div>
+          <div class="info-row"><div class="info-label">電話番号</div><div class="info-value danger">${escapeHtml(maskPhone(c.emergencyPhone))}</div></div>
           ${c.emergencyNotes ? `<div class="danger-box text-block" style="margin-top:10px;">${escapeHtml(c.emergencyNotes)}</div>` : ""}
         </div>
 
         <div class="actions">
-          <button class="btn primary" style="flex:1;" id="editBtn">編集する</button>
-          <button class="btn ghost-danger" id="deleteBtn">🗑</button>
+          <button class="btn primary" style="flex:1;" id="editClientBtn">編集する</button>
+          <button class="btn ghost-danger" id="deleteClientBtn">🗑</button>
         </div>
       `;
     }
 
-    function getEditingClient() {
-      if (!state.editingId) {
-        return {
-          id: null,
-          name: "",
-          nameKana: "",
-          age: "",
-          gender: "",
-          birthDate: "",
-          phone: "",
-          address: "",
-          disabilityLevel: "",
-          recipientNumber: "",
-          officeName: "",
-          diseases: [],
-          diseaseSymptoms: {},
-          conditions: [],
-          treatmentDetails: "",
-          notes: "",
-          specialNotes: "",
-          emergencyName: "",
-          emergencyRelation: "",
-          emergencyPhone: "",
-          emergencyNotes: ""
-        };
-      }
-      const found = state.clients.find(c => c.id === state.editingId);
-      return JSON.parse(JSON.stringify(found));
-    }
-
     function renderFormView() {
-      const c = getEditingClient();
+      const f = getFormData();
 
       return `
         <form id="clientForm" class="card form-card">
@@ -1454,7 +1363,7 @@
                 ? `
                   <select class="select" name="officeName">
                     <option value="">選択してください</option>
-                    ${state.offices.map(o => `<option value="${escapeHtml(o)}" ${c.officeName === o ? "selected" : ""}>${escapeHtml(o)}</option>`).join("")}
+                    ${state.offices.map(o => `<option value="${escapeHtml(o)}" ${f.officeName === o ? "selected" : ""}>${escapeHtml(o)}</option>`).join("")}
                   </select>
                 `
                 : `<div class="soft-box small-note">設定画面から事業所を先に登録してください</div>`
@@ -1465,41 +1374,41 @@
           <div class="form-grid">
             <div class="field">
               <label>お名前 <span class="req">必須</span></label>
-              <input class="input" name="name" value="${escapeHtml(c.name)}" placeholder="山田 太郎" />
+              <input class="input" name="name" value="${escapeHtml(f.name)}" placeholder="山田 太郎" />
             </div>
 
             <div class="field">
               <label>ふりがな</label>
-              <input class="input" name="nameKana" value="${escapeHtml(c.nameKana)}" placeholder="やまだ たろう" />
+              <input class="input" name="nameKana" value="${escapeHtml(f.nameKana)}" placeholder="やまだ たろう" />
             </div>
 
             <div class="field-row">
               <div class="field">
                 <label>年齢</label>
-                <input class="input" type="number" name="age" value="${escapeHtml(c.age)}" placeholder="65" />
+                <input class="input" type="number" name="age" value="${escapeHtml(f.age)}" placeholder="65" />
               </div>
               <div class="field">
                 <label>性別</label>
                 <select class="select" name="gender">
                   <option value="">選択</option>
-                  ${["男性","女性","その他"].map(g => `<option value="${g}" ${c.gender === g ? "selected" : ""}>${g}</option>`).join("")}
+                  ${["男性","女性","その他"].map(g => `<option value="${g}" ${f.gender === g ? "selected" : ""}>${g}</option>`).join("")}
                 </select>
               </div>
             </div>
 
             <div class="field">
               <label>生年月日</label>
-              <input class="input" type="date" name="birthDate" value="${escapeHtml(c.birthDate)}" />
+              <input class="input" type="date" name="birthDate" value="${escapeHtml(f.birthDate)}" />
             </div>
 
             <div class="field">
               <label>電話番号</label>
-              <input class="input" type="tel" name="phone" value="${escapeHtml(c.phone)}" placeholder="090-1234-5678" />
+              <input class="input" type="tel" name="phone" value="${escapeHtml(f.phone)}" placeholder="090-1234-5678" />
             </div>
 
             <div class="field">
               <label>住所</label>
-              <input class="input" name="address" value="${escapeHtml(c.address)}" placeholder="東京都○○区..." />
+              <input class="input" name="address" value="${escapeHtml(f.address)}" placeholder="東京都○○区..." />
             </div>
 
             <div class="field-row">
@@ -1507,27 +1416,27 @@
                 <label>障害支援区分</label>
                 <select class="select" name="disabilityLevel">
                   <option value="">選択</option>
-                  ${DISABILITY_LEVELS.map(l => `<option value="${l}" ${c.disabilityLevel === l ? "selected" : ""}>${l}</option>`).join("")}
+                  ${DISABILITY_LEVELS.map(level => `<option value="${level}" ${f.disabilityLevel === level ? "selected" : ""}>${level}</option>`).join("")}
                 </select>
               </div>
               <div class="field">
                 <label>受給者番号</label>
-                <input class="input" name="recipientNumber" value="${escapeHtml(c.recipientNumber)}" placeholder="1234567890" />
+                <input class="input" name="recipientNumber" value="${escapeHtml(f.recipientNumber)}" placeholder="1234567890" />
               </div>
             </div>
 
             <div class="field">
               <label>メモ</label>
-              <textarea class="textarea" name="notes" placeholder="その他の基本情報...">${escapeHtml(c.notes)}</textarea>
+              <textarea class="textarea" name="notes" placeholder="その他の基本情報...">${escapeHtml(f.notes)}</textarea>
             </div>
           </div>
 
-          <div class="section-title" style="color:var(--purple);border-bottom-color:rgba(108,92,231,.18);">🩺 障害・疾患</div>
+          <div class="section-title purple">🩺 障害・疾患</div>
           <div class="helper">該当する疾患を選択すると、代表的な症状が表示されます。</div>
           <div class="selector-wrap">
             ${DISEASE_LIST.map(d => `
-              <button type="button" class="selector purple ${c.diseases.includes(d.name) ? "active" : ""}" data-toggle-disease="${escapeHtml(d.name)}">
-                ${c.diseases.includes(d.name) ? "✓ " : ""}${escapeHtml(d.name.length > 12 ? d.name.slice(0,12) + "…" : d.name)}
+              <button type="button" class="selector purple ${f.diseases.includes(d.name) ? "active" : ""}" data-disease-toggle="${escapeHtml(d.name)}">
+                ${f.diseases.includes(d.name) ? "✓ " : ""}${escapeHtml(d.name.length > 12 ? d.name.slice(0,12) + "…" : d.name)}
               </button>
             `).join("")}
           </div>
@@ -1537,14 +1446,14 @@
             <button type="button" class="btn" id="addDiseaseBtn" style="background:var(--purple);color:#fff;padding:0 14px;border-radius:10px;">追加</button>
           </div>
 
-          <div id="diseaseArea">
-            ${(c.diseases || []).map(name => {
+          <div>
+            ${(f.diseases || []).map(name => {
               const info = DISEASE_LIST.find(d => d.name === name);
               return `
                 <div class="disease-card">
                   <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px;">
                     <div class="disease-name">${escapeHtml(name)}</div>
-                    <button type="button" class="mini-x" data-remove-disease="${escapeHtml(name)}" style="color:var(--purple);font-size:18px;">×</button>
+                    <button type="button" class="mini-x" data-disease-remove="${escapeHtml(name)}" style="color:var(--purple);font-size:18px;">×</button>
                   </div>
                   ${info ? `
                     <div class="soft-box" style="background:rgba(255,255,255,.65);margin-bottom:8px;">
@@ -1554,7 +1463,7 @@
                   ` : ""}
                   <div class="field" style="margin:0;">
                     <label style="color:var(--purple);">この利用者の個別症状メモ</label>
-                    <textarea class="textarea" data-disease-symptom="${escapeHtml(name)}" placeholder="この利用者さん特有の症状や注意点...">${escapeHtml((c.diseaseSymptoms || {})[name] || "")}</textarea>
+                    <textarea class="textarea" data-disease-note="${escapeHtml(name)}">${escapeHtml((f.diseaseSymptoms || {})[name] || "")}</textarea>
                   </div>
                 </div>
               `;
@@ -1564,8 +1473,8 @@
           <div class="section-title">📋 処置・ケア内容</div>
           <div class="selector-wrap">
             ${CONDITION_TAGS.map(tag => `
-              <button type="button" class="selector ${c.conditions.includes(tag) ? "active" : ""}" data-toggle-condition="${escapeHtml(tag)}">
-                ${c.conditions.includes(tag) ? "✓ " : ""}${escapeHtml(tag)}
+              <button type="button" class="selector ${f.conditions.includes(tag) ? "active" : ""}" data-condition-toggle="${escapeHtml(tag)}">
+                ${f.conditions.includes(tag) ? "✓ " : ""}${escapeHtml(tag)}
               </button>
             `).join("")}
           </div>
@@ -1575,24 +1484,25 @@
             <button type="button" class="btn primary" id="addConditionBtn" style="padding:0 14px;border-radius:10px;">追加</button>
           </div>
 
-          <div class="custom-tags">
-            ${(c.conditions || []).filter(tag => !CONDITION_TAGS.includes(tag)).map(tag => `
-              <span class="custom-tag">
-                ${escapeHtml(tag)}
-                <button type="button" class="mini-x" data-remove-condition="${escapeHtml(tag)}">×</button>
-              </span>
-            `).join("")}
-          </div>
+          ${(f.conditions || []).filter(tag => !CONDITION_TAGS.includes(tag)).length ? `
+            <div class="custom-tags">
+              ${(f.conditions || []).filter(tag => !CONDITION_TAGS.includes(tag)).map(tag => `
+                <span class="custom-tag">
+                  ${escapeHtml(tag)}
+                  <button type="button" class="mini-x" data-condition-remove="${escapeHtml(tag)}">×</button>
+                </span>
+              `).join("")}
+            </div>
+          ` : ""}
 
           <div class="field">
             <label>処置の詳細</label>
-            <textarea class="textarea" name="treatmentDetails" placeholder="吸引の頻度、体位変換のスケジュール、服薬情報など...">${escapeHtml(c.treatmentDetails)}</textarea>
+            <textarea class="textarea" name="treatmentDetails" placeholder="吸引の頻度、体位変換のスケジュール、服薬情報など...">${escapeHtml(f.treatmentDetails)}</textarea>
           </div>
 
           <div class="section-title accent">⭐ 特筆事項</div>
-          <div class="helper">特に重要な注意事項や申し送り事項を記載できます。</div>
           <div class="field">
-            <textarea class="textarea large" name="specialNotes" style="background:rgba(253,240,235,.5);border-color:rgba(212,118,78,.25);" placeholder="この利用者さんについて特に注意すべきこと、引き継ぎ事項など...">${escapeHtml(c.specialNotes)}</textarea>
+            <textarea class="textarea large" name="specialNotes" style="background:rgba(253,240,235,.5);border-color:rgba(212,118,78,.25);" placeholder="注意事項や引き継ぎ事項など...">${escapeHtml(f.specialNotes)}</textarea>
           </div>
 
           <div class="section-title">🚨 緊急連絡先</div>
@@ -1600,28 +1510,28 @@
             <div class="field-row">
               <div class="field">
                 <label>連絡先名</label>
-                <input class="input" name="emergencyName" value="${escapeHtml(c.emergencyName)}" placeholder="山田 花子" />
+                <input class="input" name="emergencyName" value="${escapeHtml(f.emergencyName)}" placeholder="山田 花子" />
               </div>
               <div class="field">
                 <label>続柄</label>
-                <input class="input" name="emergencyRelation" value="${escapeHtml(c.emergencyRelation)}" placeholder="配偶者" />
+                <input class="input" name="emergencyRelation" value="${escapeHtml(f.emergencyRelation)}" placeholder="配偶者" />
               </div>
             </div>
 
             <div class="field">
               <label>電話番号</label>
-              <input class="input" type="tel" name="emergencyPhone" value="${escapeHtml(c.emergencyPhone)}" placeholder="090-9876-5432" />
+              <input class="input" type="tel" name="emergencyPhone" value="${escapeHtml(f.emergencyPhone)}" placeholder="090-9876-5432" />
             </div>
 
             <div class="field">
               <label>緊急時の注意事項</label>
-              <textarea class="textarea" name="emergencyNotes" placeholder="緊急時の対応手順、主治医の連絡先など...">${escapeHtml(c.emergencyNotes)}</textarea>
+              <textarea class="textarea" name="emergencyNotes" placeholder="緊急時の対応手順など...">${escapeHtml(f.emergencyNotes)}</textarea>
             </div>
           </div>
 
           <div class="btn-row" style="margin-top:24px;">
             <button type="button" class="btn secondary" id="cancelFormBtn">キャンセル</button>
-            <button type="submit" class="btn primary">${state.editingId ? "保存する" : "登録する"}</button>
+            <button type="submit" class="btn primary">${f.id ? "保存する" : "登録する"}</button>
           </div>
         </form>
       `;
@@ -1641,7 +1551,7 @@
                 <div class="office-badge">${escapeHtml(name.charAt(0))}</div>
                 <div style="font-size:14px;font-weight:700;">${escapeHtml(name)}</div>
               </div>
-              <button class="mini-x" data-delete-office="${escapeHtml(name)}" style="font-size:18px;color:var(--danger);">🗑</button>
+              <button class="mini-x" data-office-delete="${escapeHtml(name)}" style="font-size:18px;color:var(--danger);">🗑</button>
             </div>
           `).join("")}
 
@@ -1651,7 +1561,7 @@
           </div>
 
           <div class="btn-row" style="margin-top:18px;">
-            <button class="btn secondary" id="backToListFromOffice">戻る</button>
+            <button class="btn secondary" id="officeBackBtn">戻る</button>
           </div>
         </div>
       `;
@@ -1693,7 +1603,7 @@
 
         <div class="card section">
           <div class="section-title">💾 データ管理</div>
-          <div class="helper">バックアップは手動で安全な場所へ保管してください。</div>
+          <div class="helper">バックアップは手動で安全な場所に保管してください。</div>
 
           <div class="btn-row" style="margin-bottom:10px;">
             <button class="btn primary" id="exportBtn">バックアップ書き出し</button>
@@ -1711,15 +1621,15 @@
         <div class="card section">
           <div class="section-title">📱 使い方メモ</div>
           <div class="small-note">
-            ・このアプリは端末内保存のみです。<br>
-            ・Safariの「ホーム画面に追加」でアプリ風に使えます。<br>
-            ・端末紛失やiPhone共有には注意してください。<br>
-            ・必要に応じてバックアップを取ってください。
+            ・このアプリは端末内保存です。<br>
+            ・ホーム画面に追加するとアプリ風に使えます。<br>
+            ・本体パスコード、Face ID を必ず設定してください。<br>
+            ・バックアップJSONは他人に送らないでください。
           </div>
 
           <div class="btn-row" style="margin-top:18px;">
             <button class="btn secondary" id="changePinBtn">PINを再設定</button>
-            <button class="btn secondary" id="backToListBtn">戻る</button>
+            <button class="btn secondary" id="settingsBackBtn">戻る</button>
           </div>
         </div>
       `;
@@ -1727,28 +1637,26 @@
 
     function renderModal() {
       if (!state.modal) return "";
-      const isDanger = state.modal.type === "delete" || state.modal.type === "dangerConfirm";
+      const danger = state.modal.type === "delete" || state.modal.type === "clear";
       return `
-        <div class="modal" id="modalRoot">
+        <div class="modal">
           <div class="modal-card">
-            <div class="modal-icon ${isDanger ? "danger" : ""}">${isDanger ? "🗑" : "ℹ️"}</div>
+            <div class="modal-icon ${danger ? "danger" : ""}">${danger ? "🗑" : "ℹ️"}</div>
             <div class="modal-title">${escapeHtml(state.modal.title)}</div>
             <div class="modal-text">${escapeHtml(state.modal.text)}</div>
             <div class="btn-row">
               ${
                 state.modal.type === "delete"
                   ? `
-                    <button class="btn secondary" id="modalCancel">キャンセル</button>
-                    <button class="btn danger" id="modalDelete">削除する</button>
+                    <button class="btn secondary" id="modalCancelBtn">キャンセル</button>
+                    <button class="btn danger" id="modalDeleteBtn">削除する</button>
                   `
-                  : state.modal.type === "dangerConfirm"
+                  : state.modal.type === "clear"
                     ? `
-                      <button class="btn secondary" id="modalCancel">キャンセル</button>
-                      <button class="btn danger" id="modalClearAll">削除する</button>
+                      <button class="btn secondary" id="modalCancelBtn">キャンセル</button>
+                      <button class="btn danger" id="modalClearBtn">削除する</button>
                     `
-                    : `
-                      <button class="btn primary" id="modalOk">OK</button>
-                    `
+                    : `<button class="btn primary" id="modalOkBtn">OK</button>`
               }
             </div>
           </div>
@@ -1757,13 +1665,15 @@
     }
 
     function renderLockScreen() {
-      if (!state.locked && !state.showPinSetup) return "";
+      if (!state.locked) return "";
+
       let title = "重訪ケア管理";
       let text = "4桁PINを入力してください";
-      if (state.pinMode === "setup") {
+
+      if (state.pinStage === "setup") {
         title = "PINを設定";
         text = "初回設定です。4桁の数字を入力してください";
-      } else if (state.pinMode === "confirm") {
+      } else if (state.pinStage === "confirm") {
         title = "PINを確認";
         text = "同じ4桁PINをもう一度入力してください";
       }
@@ -1781,21 +1691,21 @@
               inputmode="numeric"
               maxlength="4"
               autocomplete="off"
-              value="${escapeHtml(state.pinInput)}"
               placeholder="••••"
+              value="${escapeHtml(state.pinInput)}"
             />
             <div class="btn-row">
               <button class="btn primary" id="pinSubmitBtn">OK</button>
             </div>
             <div class="small-note" style="margin-top:14px;">
-              このアプリは通信を行わず、この端末のブラウザ内にのみデータを保存します。
+              このアプリは通信せず、入力データはこの端末のブラウザに保存されます。
             </div>
           </div>
         </div>
       `;
     }
 
-    function renderMainContent() {
+    function renderMainView() {
       if (state.view === "detail") return renderDetailView();
       if (state.view === "form") return renderFormView();
       if (state.view === "settings") return renderSettingsView();
@@ -1804,84 +1714,102 @@
     }
 
     function render() {
-      const content = `
-        <div class="header">
-          <div class="header-row">
-            ${
-              state.view !== "list"
-                ? `<button class="icon-btn" id="backBtn">‹</button>`
-                : `
-                  <div class="brand">
-                    <div class="brand-icon">💚</div>
-                    <div class="brand-text">
-                      <div class="brand-title">重訪ケア管理</div>
-                      <div class="brand-sub">個人利用専用・端末内保存</div>
+      app.innerHTML = `
+        <div class="app">
+          <div class="header">
+            <div class="header-row">
+              ${
+                state.view !== "list"
+                  ? `<button class="icon-btn" id="backBtn">‹</button>`
+                  : `
+                    <div class="brand">
+                      <div class="brand-icon">💚</div>
+                      <div>
+                        <div class="brand-title">重訪ケア管理</div>
+                        <div class="brand-sub">個人利用専用・端末保存</div>
+                      </div>
                     </div>
-                  </div>
-                `
-            }
+                  `
+              }
 
-            <div style="font-size:15px;font-weight:700;min-width:56px;text-align:center;">
-              ${escapeHtml(renderHeaderTitle())}
+              <div style="font-size:15px;font-weight:700;min-width:56px;text-align:center;">
+                ${escapeHtml(renderHeaderTitle())}
+              </div>
+
+              ${
+                state.view === "list"
+                  ? `
+                    <div class="header-actions">
+                      <button class="icon-btn" id="officesBtn">🏢</button>
+                      <button class="icon-btn" id="settingsBtn">⚙️</button>
+                      <button class="icon-btn white" id="addBtn">＋</button>
+                    </div>
+                  `
+                  : `<div style="width:38px;"></div>`
+              }
             </div>
 
-            ${
-              state.view === "list"
-                ? `
-                  <div class="header-actions">
-                    <button class="icon-btn" id="officeBtn">🏢</button>
-                    <button class="icon-btn" id="settingsBtn">⚙️</button>
-                    <button class="icon-btn white" id="addBtn">＋</button>
-                  </div>
-                `
-                : `<div style="width:38px;"></div>`
-            }
+            <div class="security-banner">
+              通信なし / localStorage保存 / PINロック対応。実データは端末管理にご注意ください。
+            </div>
           </div>
 
-          <div class="security-banner">
-            通信なし / ローカル保存 / PINロック対応。実データの扱いには端末管理とバックアップ保管にご注意ください。
-          </div>
+          <main class="main">
+            ${renderMainView()}
+          </main>
+
+          ${renderModal()}
+          ${renderLockScreen()}
         </div>
-
-        <main class="main">
-          ${renderMainContent()}
-          <div class="footer-space"></div>
-        </main>
-
-        ${renderModal()}
-        ${renderLockScreen()}
       `;
 
-      app.innerHTML = content;
       bindEvents();
     }
 
     function bindEvents() {
-      const lockScreen = document.getElementById("pinField");
-      if (lockScreen) {
-        lockScreen.focus();
-        lockScreen.addEventListener("input", (e) => {
+      const pinField = document.getElementById("pinField");
+      if (pinField) {
+        pinField.focus();
+        pinField.addEventListener("input", (e) => {
           state.pinInput = e.target.value.replace(/\D/g, "").slice(0,4);
         });
-        lockScreen.addEventListener("keydown", (e) => {
+        pinField.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {
             e.preventDefault();
-            handlePinSubmit();
+            submitPin();
           }
         });
       }
 
       const pinSubmitBtn = document.getElementById("pinSubmitBtn");
-      if (pinSubmitBtn) pinSubmitBtn.onclick = handlePinSubmit;
+      if (pinSubmitBtn) pinSubmitBtn.onclick = submitPin;
 
-      if (state.locked || state.showPinSetup) return;
+      if (state.locked) {
+        bindModalEvents();
+        return;
+      }
 
       resetLockTimer();
 
-      const activityEvents = ["click","input","change","keydown","touchstart"];
-      activityEvents.forEach(ev => {
-        document.addEventListener(ev, resetLockTimer, { once: true });
-      });
+      const backBtn = document.getElementById("backBtn");
+      if (backBtn) {
+        backBtn.onclick = () => {
+          if (state.view === "form") {
+            closeForm();
+            return;
+          }
+          openList();
+        };
+      }
+
+      const addBtn = document.getElementById("addBtn");
+      if (addBtn) addBtn.onclick = startNewForm;
+
+      const settingsBtn = document.getElementById("settingsBtn");
+      if (settingsBtn) settingsBtn.onclick = openSettings;
+
+      const officesBtn = document.getElementById("officesBtn");
+      if (officesBtn) officesBtn.onclick = openOffices;
 
       const searchInput = document.getElementById("searchInput");
       if (searchInput) {
@@ -1899,9 +1827,9 @@
         };
       }
 
-      document.querySelectorAll("[data-chip-office]").forEach(btn => {
+      document.querySelectorAll("[data-office-filter]").forEach(btn => {
         btn.onclick = () => {
-          state.filterOffice = btn.getAttribute("data-chip-office");
+          state.filterOffice = btn.getAttribute("data-office-filter");
           render();
         };
       });
@@ -1910,45 +1838,159 @@
         btn.onclick = () => openDetail(btn.getAttribute("data-open-detail"));
       });
 
-      const backBtn = document.getElementById("backBtn");
-      if (backBtn) {
-        backBtn.onclick = () => {
-          if (state.view === "form" && state.editingId) {
-            state.view = "detail";
+      const editClientBtn = document.getElementById("editClientBtn");
+      if (editClientBtn) editClientBtn.onclick = () => startEditForm(state.selectedId);
+
+      const deleteClientBtn = document.getElementById("deleteClientBtn");
+      if (deleteClientBtn) {
+        deleteClientBtn.onclick = () => {
+          showModal("delete", "削除しますか？", "この利用者情報を削除します。この操作は取り消せません。");
+        };
+      }
+
+      bindFormEvents();
+      bindOfficeEvents();
+      bindSettingsEvents();
+      bindModalEvents();
+    }
+
+    function bindFormEvents() {
+      const form = document.getElementById("clientForm");
+      if (!form) return;
+
+      document.querySelectorAll("[data-disease-toggle]").forEach(btn => {
+        btn.onclick = () => {
+          const name = btn.getAttribute("data-disease-toggle");
+          const f = state.formData;
+          const exists = f.diseases.includes(name);
+          if (exists) {
+            f.diseases = f.diseases.filter(d => d !== name);
+            delete f.diseaseSymptoms[name];
           } else {
-            state.view = "list";
+            f.diseases.push(name);
+          }
+          render();
+        };
+      });
+
+      document.querySelectorAll("[data-disease-remove]").forEach(btn => {
+        btn.onclick = () => {
+          const name = btn.getAttribute("data-disease-remove");
+          const f = state.formData;
+          f.diseases = f.diseases.filter(d => d !== name);
+          delete f.diseaseSymptoms[name];
+          render();
+        };
+      });
+
+      document.querySelectorAll("[data-condition-toggle]").forEach(btn => {
+        btn.onclick = () => {
+          const tag = btn.getAttribute("data-condition-toggle");
+          const f = state.formData;
+          if (f.conditions.includes(tag)) {
+            f.conditions = f.conditions.filter(t => t !== tag);
+          } else {
+            f.conditions.push(tag);
+          }
+          render();
+        };
+      });
+
+      document.querySelectorAll("[data-condition-remove]").forEach(btn => {
+        btn.onclick = () => {
+          const tag = btn.getAttribute("data-condition-remove");
+          state.formData.conditions = state.formData.conditions.filter(t => t !== tag);
+          render();
+        };
+      });
+
+      document.querySelectorAll("[data-disease-note]").forEach(el => {
+        el.oninput = () => {
+          const name = el.getAttribute("data-disease-note");
+          state.formData.diseaseSymptoms[name] = el.value;
+        };
+      });
+
+      const addDiseaseBtn = document.getElementById("addDiseaseBtn");
+      if (addDiseaseBtn) {
+        addDiseaseBtn.onclick = () => {
+          const input = document.getElementById("customDiseaseInput");
+          const value = (input.value || "").trim();
+          if (!value) return;
+          if (!state.formData.diseases.includes(value)) {
+            state.formData.diseases.push(value);
           }
           render();
         };
       }
 
-      const addBtn = document.getElementById("addBtn");
-      if (addBtn) addBtn.onclick = () => openForm();
+      const addConditionBtn = document.getElementById("addConditionBtn");
+      if (addConditionBtn) {
+        addConditionBtn.onclick = () => {
+          const input = document.getElementById("customConditionInput");
+          const value = (input.value || "").trim();
+          if (!value) return;
+          if (!state.formData.conditions.includes(value)) {
+            state.formData.conditions.push(value);
+          }
+          render();
+        };
+      }
 
-      const officeBtn = document.getElementById("officeBtn");
-      if (officeBtn) officeBtn.onclick = () => openView("offices");
+      const cancelFormBtn = document.getElementById("cancelFormBtn");
+      if (cancelFormBtn) cancelFormBtn.onclick = closeForm;
 
-      const settingsBtn = document.getElementById("settingsBtn");
-      if (settingsBtn) settingsBtn.onclick = () => openView("settings");
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const f = state.formData;
 
-      const editBtn = document.getElementById("editBtn");
-      if (editBtn) editBtn.onclick = () => openForm(state.selectedId);
+        const client = {
+          id: f.id || null,
+          name: String(fd.get("name") || "").trim(),
+          nameKana: String(fd.get("nameKana") || "").trim(),
+          age: String(fd.get("age") || "").trim(),
+          gender: String(fd.get("gender") || "").trim(),
+          birthDate: String(fd.get("birthDate") || "").trim(),
+          phone: String(fd.get("phone") || "").trim(),
+          address: String(fd.get("address") || "").trim(),
+          disabilityLevel: String(fd.get("disabilityLevel") || "").trim(),
+          recipientNumber: String(fd.get("recipientNumber") || "").trim(),
+          officeName: String(fd.get("officeName") || "").trim(),
+          diseases: [...f.diseases],
+          diseaseSymptoms: { ...f.diseaseSymptoms },
+          conditions: [...f.conditions],
+          treatmentDetails: String(fd.get("treatmentDetails") || "").trim(),
+          notes: String(fd.get("notes") || "").trim(),
+          specialNotes: String(fd.get("specialNotes") || "").trim(),
+          emergencyName: String(fd.get("emergencyName") || "").trim(),
+          emergencyRelation: String(fd.get("emergencyRelation") || "").trim(),
+          emergencyPhone: String(fd.get("emergencyPhone") || "").trim(),
+          emergencyNotes: String(fd.get("emergencyNotes") || "").trim()
+        };
 
-      const deleteBtn = document.getElementById("deleteBtn");
-      if (deleteBtn) deleteBtn.onclick = confirmDelete;
+        if (!client.name) {
+          showModal("info", "お名前を入力してください", "利用者登録にはお名前が必要です。");
+          return;
+        }
 
-      const modalCancel = document.getElementById("modalCancel");
-      if (modalCancel) modalCancel.onclick = closeModal;
+        if (client.id) {
+          state.clients = state.clients.map(item => item.id === client.id ? client : item);
+        } else {
+          client.id = generateId();
+          client.createdAt = new Date().toISOString();
+          state.clients.unshift(client);
+        }
 
-      const modalOk = document.getElementById("modalOk");
-      if (modalOk) modalOk.onclick = closeModal;
+        persistAll();
+        state.selectedId = client.id;
+        state.formData = null;
+        state.view = "detail";
+        render();
+      };
+    }
 
-      const modalDelete = document.getElementById("modalDelete");
-      if (modalDelete) modalDelete.onclick = doDelete;
-
-      const modalClearAll = document.getElementById("modalClearAll");
-      if (modalClearAll) modalClearAll.onclick = doClearAllData;
-
+    function bindOfficeEvents() {
       const addOfficeBtn = document.getElementById("addOfficeBtn");
       if (addOfficeBtn) {
         addOfficeBtn.onclick = () => {
@@ -1957,30 +1999,32 @@
           if (!value) return;
           if (!state.offices.includes(value)) {
             state.offices.push(value);
-            persistData();
+            persistAll();
           }
           render();
         };
       }
 
-      document.querySelectorAll("[data-delete-office]").forEach(btn => {
+      document.querySelectorAll("[data-office-delete]").forEach(btn => {
         btn.onclick = () => {
-          const name = btn.getAttribute("data-delete-office");
+          const name = btn.getAttribute("data-office-delete");
           state.offices = state.offices.filter(o => o !== name);
           state.clients = state.clients.map(c => c.officeName === name ? { ...c, officeName: "" } : c);
-          persistData();
+          persistAll();
           render();
         };
       });
 
-      const backToListFromOffice = document.getElementById("backToListFromOffice");
-      if (backToListFromOffice) backToListFromOffice.onclick = () => openView("list");
+      const officeBackBtn = document.getElementById("officeBackBtn");
+      if (officeBackBtn) officeBackBtn.onclick = openList;
+    }
 
+    function bindSettingsEvents() {
       const toggleAnonymous = document.getElementById("toggleAnonymous");
       if (toggleAnonymous) {
         toggleAnonymous.onclick = () => {
           state.settings.anonymousList = !state.settings.anonymousList;
-          persistData();
+          persistAll();
           render();
         };
       }
@@ -1989,7 +2033,7 @@
       if (toggleMaskPhone) {
         toggleMaskPhone.onclick = () => {
           state.settings.maskPhone = !state.settings.maskPhone;
-          persistData();
+          persistAll();
           render();
         };
       }
@@ -1998,7 +2042,7 @@
       if (autoLockSelect) {
         autoLockSelect.onchange = (e) => {
           state.settings.autoLockMinutes = Number(e.target.value);
-          persistData();
+          persistAll();
           resetLockTimer();
         };
       }
@@ -2015,220 +2059,127 @@
       }
 
       const clearAllBtn = document.getElementById("clearAllBtn");
-      if (clearAllBtn) clearAllBtn.onclick = clearAllData;
-
-      const backToListBtn = document.getElementById("backToListBtn");
-      if (backToListBtn) backToListBtn.onclick = () => openView("list");
+      if (clearAllBtn) {
+        clearAllBtn.onclick = () => {
+          showModal("clear", "全データを削除しますか？", "利用者・事業所・設定をすべて削除します。この操作は元に戻せません。");
+        };
+      }
 
       const changePinBtn = document.getElementById("changePinBtn");
       if (changePinBtn) {
         changePinBtn.onclick = () => {
           state.locked = true;
-          state.pinMode = "setup";
-          state.pinTemp = "";
           state.pinInput = "";
+          state.pinStage = "setup";
+          state.firstPin = "";
           render();
         };
       }
 
-      const clientForm = document.getElementById("clientForm");
-      if (clientForm) {
-        const working = getEditingClient();
+      const settingsBackBtn = document.getElementById("settingsBackBtn");
+      if (settingsBackBtn) settingsBackBtn.onclick = openList;
+    }
 
-        document.querySelectorAll("[data-toggle-disease]").forEach(btn => {
-          btn.onclick = () => {
-            const name = btn.getAttribute("data-toggle-disease");
-            if (working.diseases.includes(name)) {
-              working.diseases = working.diseases.filter(d => d !== name);
-              delete working.diseaseSymptoms[name];
-            } else {
-              working.diseases.push(name);
-            }
-            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
-            state.editingId = "__temp__";
-            tempClientForRender = working;
-            renderTempForm(working);
+    function bindModalEvents() {
+      const modalOkBtn = document.getElementById("modalOkBtn");
+      if (modalOkBtn) modalOkBtn.onclick = closeModal;
+
+      const modalCancelBtn = document.getElementById("modalCancelBtn");
+      if (modalCancelBtn) modalCancelBtn.onclick = closeModal;
+
+      const modalDeleteBtn = document.getElementById("modalDeleteBtn");
+      if (modalDeleteBtn) {
+        modalDeleteBtn.onclick = () => {
+          state.clients = state.clients.filter(c => c.id !== state.selectedId);
+          persistAll();
+          state.selectedId = null;
+          state.modal = null;
+          state.view = "list";
+          render();
+        };
+      }
+
+      const modalClearBtn = document.getElementById("modalClearBtn");
+      if (modalClearBtn) {
+        modalClearBtn.onclick = () => {
+          state.clients = [];
+          state.offices = [];
+          state.settings = {
+            autoLockMinutes: 3,
+            anonymousList: true,
+            maskPhone: true
           };
-        });
-
-        document.querySelectorAll("[data-remove-disease]").forEach(btn => {
-          btn.onclick = () => {
-            const name = btn.getAttribute("data-remove-disease");
-            working.diseases = working.diseases.filter(d => d !== name);
-            delete working.diseaseSymptoms[name];
-            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
-            state.editingId = "__temp__";
-            tempClientForRender = working;
-            renderTempForm(working);
-          };
-        });
-
-        document.querySelectorAll("[data-toggle-condition]").forEach(btn => {
-          btn.onclick = () => {
-            const tag = btn.getAttribute("data-toggle-condition");
-            if (working.conditions.includes(tag)) {
-              working.conditions = working.conditions.filter(t => t !== tag);
-            } else {
-              working.conditions.push(tag);
-            }
-            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
-            state.editingId = "__temp__";
-            tempClientForRender = working;
-            renderTempForm(working);
-          };
-        });
-
-        document.querySelectorAll("[data-remove-condition]").forEach(btn => {
-          btn.onclick = () => {
-            const tag = btn.getAttribute("data-remove-condition");
-            working.conditions = working.conditions.filter(t => t !== tag);
-            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
-            state.editingId = "__temp__";
-            tempClientForRender = working;
-            renderTempForm(working);
-          };
-        });
-
-        document.querySelectorAll("[data-disease-symptom]").forEach(el => {
-          el.oninput = () => {
-            const name = el.getAttribute("data-disease-symptom");
-            working.diseaseSymptoms[name] = el.value;
-            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
-          };
-        });
-
-        const addDiseaseBtn = document.getElementById("addDiseaseBtn");
-        if (addDiseaseBtn) {
-          addDiseaseBtn.onclick = () => {
-            const input = document.getElementById("customDiseaseInput");
-            const value = (input.value || "").trim();
-            if (!value) return;
-            if (!working.diseases.includes(value)) working.diseases.push(value);
-            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
-            state.editingId = "__temp__";
-            tempClientForRender = working;
-            renderTempForm(working);
-          };
-        }
-
-        const addConditionBtn = document.getElementById("addConditionBtn");
-        if (addConditionBtn) {
-          addConditionBtn.onclick = () => {
-            const input = document.getElementById("customConditionInput");
-            const value = (input.value || "").trim();
-            if (!value) return;
-            if (!working.conditions.includes(value)) working.conditions.push(value);
-            sessionStorage.setItem("tempFormClient", JSON.stringify(working));
-            state.editingId = "__temp__";
-            tempClientForRender = working;
-            renderTempForm(working);
-          };
-        }
-
-        const cancelFormBtn = document.getElementById("cancelFormBtn");
-        if (cancelFormBtn) {
-          cancelFormBtn.onclick = () => {
-            sessionStorage.removeItem("tempFormClient");
-            if (state.selectedId && state.clients.find(c => c.id === state.selectedId)) {
-              state.view = "detail";
-            } else {
-              state.view = "list";
-            }
-            state.editingId = state.editingId === "__temp__" ? null : state.editingId;
-            tempClientForRender = null;
-            render();
-          };
-        }
-
-        clientForm.onsubmit = (e) => {
-          e.preventDefault();
-          const fd = new FormData(clientForm);
-
-          const draft = tempClientForRender || getEditingClient();
-          const client = {
-            id: draft.id && draft.id !== "__temp__" ? draft.id : null,
-            name: String(fd.get("name") || "").trim(),
-            nameKana: String(fd.get("nameKana") || "").trim(),
-            age: String(fd.get("age") || "").trim(),
-            gender: String(fd.get("gender") || "").trim(),
-            birthDate: String(fd.get("birthDate") || "").trim(),
-            phone: String(fd.get("phone") || "").trim(),
-            address: String(fd.get("address") || "").trim(),
-            disabilityLevel: String(fd.get("disabilityLevel") || "").trim(),
-            recipientNumber: String(fd.get("recipientNumber") || "").trim(),
-            officeName: String(fd.get("officeName") || "").trim(),
-            diseases: draft.diseases || [],
-            diseaseSymptoms: draft.diseaseSymptoms || {},
-            conditions: draft.conditions || [],
-            treatmentDetails: String(fd.get("treatmentDetails") || "").trim(),
-            notes: String(fd.get("notes") || "").trim(),
-            specialNotes: String(fd.get("specialNotes") || "").trim(),
-            emergencyName: String(fd.get("emergencyName") || "").trim(),
-            emergencyRelation: String(fd.get("emergencyRelation") || "").trim(),
-            emergencyPhone: String(fd.get("emergencyPhone") || "").trim(),
-            emergencyNotes: String(fd.get("emergencyNotes") || "").trim()
-          };
-
-          if (!client.name) {
-            state.modal = {
-              type: "info",
-              title: "お名前を入力してください",
-              text: "利用者登録にはお名前が必要です。"
-            };
-            render();
-            return;
-          }
-
-          if (client.id) {
-            state.clients = state.clients.map(c => c.id === client.id ? client : c);
-            state.selectedId = client.id;
-          } else {
-            client.id = generateId();
-            client.createdAt = new Date().toISOString();
-            state.clients.unshift(client);
-            state.selectedId = client.id;
-          }
-
-          persistData();
-          sessionStorage.removeItem("tempFormClient");
-          tempClientForRender = null;
-          state.editingId = null;
-          state.view = "detail";
+          persistAll();
+          state.selectedId = null;
+          state.formData = null;
+          state.search = "";
+          state.filterOffice = "all";
+          state.modal = null;
+          state.view = "list";
           render();
         };
       }
     }
 
-    let tempClientForRender = null;
-
-    function renderTempForm(client) {
-      tempClientForRender = client;
-      render();
+    function exportBackup() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        app: "重訪ケア管理",
+        version: 2,
+        clients: state.clients,
+        offices: state.offices,
+        settings: state.settings
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "care-backup-" + new Date().toISOString().slice(0,10) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showModal("info", "バックアップを書き出しました", "ダウンロードファイルを安全な場所に保管してください。");
     }
 
-    const originalGetEditingClient = getEditingClient;
-    getEditingClient = function() {
-      if (tempClientForRender) return JSON.parse(JSON.stringify(tempClientForRender));
-      if (state.editingId === "__temp__") {
-        const temp = safeParse(sessionStorage.getItem("tempFormClient"), null);
-        if (temp) return temp;
-      }
-      return originalGetEditingClient();
-    };
+    function importBackup(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (!data || !Array.isArray(data.clients) || !Array.isArray(data.offices)) {
+            throw new Error("invalid");
+          }
+          state.clients = data.clients;
+          state.offices = data.offices;
+          state.settings = {
+            autoLockMinutes: 3,
+            anonymousList: true,
+            maskPhone: true,
+            ...(data.settings || {})
+          };
+          persistAll();
+          showModal("info", "復元が完了しました", "バックアップデータをこの端末に復元しました。");
+        } catch {
+          showModal("info", "復元できませんでした", "JSON形式が正しくないか、対応していないバックアップです。");
+        }
+      };
+      reader.readAsText(file);
+    }
 
     window.addEventListener("visibilitychange", () => {
-      if (document.hidden && !state.locked && !state.showPinSetup) {
+      if (document.hidden && !state.locked) {
         state.locked = true;
         state.pinInput = "";
+        state.pinStage = "unlock";
         render();
       }
     });
 
-    window.addEventListener("beforeunload", () => {
-      persistData();
-    });
+    window.addEventListener("beforeunload", persistAll);
 
     loadState();
+    attachActivityReset();
     render();
   </script>
 </body>
