@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-<meta name="theme-color" content="#2B6B5E" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="重訪ケア管理" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#2B6B5E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="重訪ケア管理">
 <title>重訪ケア管理</title>
 <style>
-:root{--bg:#F7F5F0;--card:#fff;--primary:#2B6B5E;--primaryDark:#1E4D44;--primaryLight:#E8F0EE;--accent:#D4764E;--accentLight:#FDF0EB;--danger:#C0392B;--dangerLight:#FDEDEB;--text:#2C3E40;--textLight:#7A8B8D;--border:#E2DED6;--purple:#6C5CE7;--purpleLight:#F0EDFC;--shadow:0 2px 12px rgba(43,107,94,.08)}
+:root{--bg:#F7F5F0;--card:#fff;--primary:#2B6B5E;--primaryDark:#1E4D44;--primaryLight:#E8F0EE;--accent:#D4764E;--accentLight:#FDF0EB;--danger:#C0392B;--dangerLight:#FDEDEB;--text:#2C3E40;--textLight:#7A8B8D;--border:#E2DED6;--shadow:0 2px 12px rgba(43,107,94,.08)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+body{min-height:100vh}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
-body{min-height:100vh}
 .header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--primary),var(--primaryDark));color:#fff;padding:18px 16px 16px;box-shadow:0 4px 20px rgba(43,107,94,.25)}
 .headerRow{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .brand{display:flex;align-items:center;gap:10px}
@@ -24,28 +24,27 @@ body{min-height:100vh}
 .actions{display:flex;gap:8px}
 .iconBtn{width:38px;height:38px;border:none;border-radius:11px;background:rgba(255,255,255,.15);color:#fff}
 .iconBtn.white{background:#fff;color:var(--primary)}
+.security{margin-top:10px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px;font-size:11px;line-height:1.6}
 .main{max-width:760px;margin:0 auto;padding:14px 14px 110px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
 .section{margin-bottom:12px;padding:16px}
+.muted{font-size:12px;color:var(--textLight)}
+.helper{font-size:12px;color:var(--textLight);line-height:1.6}
 .search{display:flex;gap:10px;align-items:center;padding:10px 14px;margin-bottom:10px}
 .search input{border:none;outline:none;background:transparent;flex:1}
+.empty{text-align:center;padding:48px 18px}
+.emptyIcon{width:62px;height:62px;border-radius:20px;background:var(--primaryLight);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--primary);font-size:28px}
 .chips{display:flex;gap:8px;overflow:auto;padding:2px 0 10px;margin-bottom:6px}
 .chip{white-space:nowrap;border:1px solid var(--border);background:#fff;color:var(--textLight);padding:7px 13px;border-radius:999px;font-size:12px}
 .chip.active{background:var(--primaryLight);color:var(--primaryDark);border:1.5px solid var(--primary);font-weight:700}
-.muted{font-size:12px;color:var(--textLight)}
-.empty{text-align:center;padding:48px 18px}
-.emptyIcon{width:62px;height:62px;border-radius:20px;background:var(--primaryLight);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--primary);font-size:28px}
 .list{display:flex;flex-direction:column;gap:10px}
-.item{width:100%;border:1px solid var(--border);background:#fff;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow)}
+.item{width:100%;border:1px solid var(--border);background:#fff;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow);text-align:left}
 .avatar{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--primaryLight),rgba(43,107,94,.15));display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:800}
 .itemMain{flex:1;min-width:0}
 .nameRow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
 .name{font-size:15px;font-weight:800}
 .miniBadge{font-size:10px;padding:2px 8px;border-radius:7px;background:var(--accentLight);color:var(--accent);font-weight:700}
 .office{font-size:11px;color:var(--primary);font-weight:700;margin-bottom:4px}
-.tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
-.tag{font-size:10px;padding:3px 7px;border-radius:6px;background:var(--primaryLight);color:var(--primaryDark);font-weight:600}
-.tag.purple{background:var(--purpleLight);color:var(--purple)}
 .detailTop{text-align:center;padding:18px;margin-bottom:12px}
 .detailAvatar{width:66px;height:66px;border-radius:20px;background:linear-gradient(135deg,var(--primary),var(--primaryDark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:800;margin:0 auto 10px}
 .detailName{font-size:21px;font-weight:800;margin-bottom:4px}
@@ -53,18 +52,14 @@ body{min-height:100vh}
 .pill{font-size:12px;background:var(--bg);padding:4px 10px;border-radius:9px}
 .pill.accent{background:var(--accentLight);color:var(--accent);font-weight:700}
 .sectionTitle{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--primary);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primaryLight)}
-.sectionTitle.purple{color:var(--purple);border-bottom-color:rgba(108,92,231,.18)}
 .sectionTitle.accent{color:var(--accent);border-bottom-color:rgba(212,118,78,.18)}
 .infoRow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--bg)}
 .infoLabel{font-size:12px;color:var(--textLight);min-width:78px}
 .infoValue{flex:1;text-align:right;font-size:13px;font-weight:600;word-break:break-all}
-.infoValue.danger{color:var(--danger)}
+.danger{color:var(--danger)}
 .box{background:var(--bg);border-radius:10px;padding:12px;font-size:13px;line-height:1.8;white-space:pre-wrap}
 .accentBox{background:var(--accentLight);border-left:3px solid var(--accent)}
 .dangerBox{background:var(--dangerLight);color:var(--danger)}
-.disease{background:var(--purpleLight);border-left:3px solid var(--purple);border-radius:10px;padding:12px;margin-bottom:8px}
-.diseaseName{font-size:13px;font-weight:800;color:var(--purple);margin-bottom:6px}
-.diseaseText{font-size:12px;line-height:1.7;white-space:pre-wrap}
 .rowBtns{display:flex;gap:10px;margin-top:16px}
 .btn{border:none;border-radius:12px;padding:14px 16px;font-weight:800;font-size:14px}
 .btn.primary{background:var(--primary);color:#fff}
@@ -79,33 +74,16 @@ body{min-height:100vh}
 .textarea.large{min-height:120px}
 .fieldRow{display:flex;gap:10px}
 .fieldRow>.field{flex:1;min-width:0}
-.helper{font-size:12px;color:var(--textLight);margin-bottom:10px;line-height:1.6}
-.selectors{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.selector{border:1px solid var(--border);background:#fff;color:var(--textLight);padding:7px 11px;border-radius:8px;font-size:12px}
-.selector.active{background:var(--primaryLight);color:var(--primaryDark);border:1.5px solid var(--primary);font-weight:700}
-.selector.purple.active{background:var(--purpleLight);color:var(--purple);border-color:var(--purple)}
-.inlineAdd{display:flex;gap:8px;margin-bottom:12px}
-.inlineAdd .input{flex:1}
-.customTags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.customTag{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;background:var(--accentLight);color:var(--accent);font-size:12px;font-weight:700}
-.miniX{border:none;background:none;color:inherit;padding:0;font-size:14px;line-height:1}
 .settingsList{display:flex;flex-direction:column;gap:10px}
 .settingRow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;background:var(--bg);border-radius:12px}
 .toggle{position:relative;width:52px;height:30px;border:none;border-radius:999px;background:#d8d3c8}
 .toggle:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.15);transition:.2s}
 .toggle.active{background:var(--primary)}
 .toggle.active:after{left:25px}
-.officeItem{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);border-radius:12px;margin-bottom:8px}
-.officeLeft{display:flex;align-items:center;gap:8px}
-.officeBadge{width:32px;height:32px;border-radius:10px;background:var(--primaryLight);display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:800}
-.smallNote{font-size:11px;color:var(--textLight);line-height:1.6}
-.security{margin-top:10px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px;font-size:11px;line-height:1.6}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
-.modalCard{width:100%;max-width:360px;background:#fff;border-radius:18px;padding:22px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.18)}
-.modalIcon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;background:var(--primaryLight);color:var(--primary);font-size:24px}
-.modalIcon.danger{background:var(--dangerLight);color:var(--danger)}
-.modalTitle{font-size:17px;font-weight:800;margin-bottom:8px}
-.modalText{font-size:13px;color:var(--textLight);line-height:1.7;margin-bottom:18px;white-space:pre-wrap}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
+.dialog{width:100%;max-width:360px;background:#fff;border-radius:18px;padding:22px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.18)}
+.dialogTitle{font-size:17px;font-weight:800;margin-bottom:8px}
+.dialogText{font-size:13px;color:var(--textLight);line-height:1.7;margin-bottom:18px;white-space:pre-wrap}
 .lock{position:fixed;inset:0;z-index:30;background:linear-gradient(180deg,#f5f2eb,#ecf4f1);display:flex;align-items:center;justify-content:center;padding:20px}
 .lockCard{width:100%;max-width:380px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.7);border-radius:22px;padding:24px 20px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.12)}
 .lockBadge{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;background:linear-gradient(135deg,var(--primary),var(--primaryDark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:800}
@@ -116,31 +94,15 @@ body{min-height:100vh}
 <body>
 <div id="app"></div>
 <script>
-const STORAGE_KEY='kaigo_clients_v3';
-const OFFICES_KEY='kaigo_offices_v3';
-const SETTINGS_KEY='kaigo_settings_v3';
-const PIN_KEY='kaigo_pin_v3';
-
-const DISEASE_LIST=[
-  {name:'ALS（筋萎縮性側索硬化症）',symptoms:'四肢の筋力低下・萎縮、構音障害、嚥下障害、呼吸筋麻痺。進行に伴い人工呼吸器・胃ろう管理が必要になることが多い。コミュニケーション手段の確保が重要。'},
-  {name:'筋ジストロフィー',symptoms:'進行性の筋力低下・筋萎縮、関節拘縮、心筋障害、呼吸機能低下。移乗・体位変換の介助が必須。拘縮予防のためのストレッチが重要。'},
-  {name:'パーキンソン病',symptoms:'安静時振戦、筋強剛、無動・寡動、姿勢反射障害。すくみ足による転倒リスク、嚥下障害、自律神経症状（起立性低血圧・便秘）。服薬管理とオン・オフの把握が重要。'},
-  {name:'脳性麻痺',symptoms:'痙縮・不随意運動、姿勢保持困難、関節変形・拘縮、摂食嚥下障害。個人差が大きく、コミュニケーション方法・姿勢管理・呼吸管理を個別に把握する必要がある。'},
-  {name:'脊髄損傷',symptoms:'損傷レベル以下の運動・感覚麻痺、排泄障害（自己導尿・膀胱管理）、自律神経過反射、褥瘡リスク、体温調節障害。損傷レベルによりADLが大きく異なる。'},
-  {name:'多発性硬化症（MS）',symptoms:'視力障害、四肢の痺れ・脱力、疲労感、排尿障害、認知機能低下。寛解と再発を繰り返し、症状が日によって変動することがある。'},
-  {name:'脳血管障害（脳卒中後遺症）',symptoms:'片麻痺、失語症、高次脳機能障害（注意障害・半側空間無視など）、嚥下障害、排泄障害。麻痺側の管理と転倒予防が重要。'},
-  {name:'重症心身障害',symptoms:'重度の知的障害と重度の肢体不自由の重複。全介助、医療的ケア（吸引・経管栄養・呼吸管理）が必要な場合が多い。表情やバイタルからの状態把握が重要。'},
-  {name:'遷延性意識障害',symptoms:'意識レベル低下の持続、自発的な意思表示困難、全身管理（栄養・排泄・呼吸・褥瘡予防）が必要。わずかな反応の変化に注意を払う。'}
-];
-const CONDITION_TAGS=['気管切開','人工呼吸器','経管栄養','胃ろう','吸引必要','褥瘡リスク','てんかん','糖尿病','高血圧','嚥下障害','排泄介助','体位変換','コミュニケーション支援','移乗介助'];
-const DISABILITY_LEVELS=['区分1','区分2','区分3','区分4','区分5','区分6'];
-
+(function(){
+const STORAGE_KEY='kaigo_working_clients';
+const SETTINGS_KEY='kaigo_working_settings';
+const PIN_KEY='kaigo_working_pin';
 const app=document.getElementById('app');
 let lockTimer=null;
 
 const state={
   clients:[],
-  offices:[],
   settings:{autoLockMinutes:3,anonymousList:true,maskPhone:true},
   view:'list',
   selectedId:null,
@@ -154,96 +116,84 @@ const state={
   firstPin:''
 };
 
-function safeParse(v,f){try{return JSON.parse(v)}catch{return f}}
-function loadState(){
+function safeParse(v,f){try{return JSON.parse(v)}catch(e){return f}}
+function load(){
   state.clients=safeParse(localStorage.getItem(STORAGE_KEY),[]);
-  state.offices=safeParse(localStorage.getItem(OFFICES_KEY),[]);
-  state.settings={autoLockMinutes:3,anonymousList:true,maskPhone:true,...safeParse(localStorage.getItem(SETTINGS_KEY),{})};
-  state.locked=true;
+  state.settings=Object.assign({autoLockMinutes:3,anonymousList:true,maskPhone:true},safeParse(localStorage.getItem(SETTINGS_KEY),{}));
   state.pinStage=localStorage.getItem(PIN_KEY)?'unlock':'setup';
+  state.locked=true;
 }
-function persistAll(){
+function save(){
   localStorage.setItem(STORAGE_KEY,JSON.stringify(state.clients));
-  localStorage.setItem(OFFICES_KEY,JSON.stringify(state.offices));
   localStorage.setItem(SETTINGS_KEY,JSON.stringify(state.settings));
 }
-function generateId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
-function esc(s){return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
+function esc(s){
+  return String(s==null?'':s)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#39;');
+}
+function makeId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function formatDate(d){
-  if(!d)return'';
-  const date=new Date(d);
-  if(Number.isNaN(date.getTime()))return d;
-  return date.getFullYear()+'/'+String(date.getMonth()+1).padStart(2,'0')+'/'+String(date.getDate()).padStart(2,'0');
+  if(!d)return '';
+  const x=new Date(d);
+  if(Number.isNaN(x.getTime()))return d;
+  return x.getFullYear()+'/'+String(x.getMonth()+1).padStart(2,'0')+'/'+String(x.getDate()).padStart(2,'0');
 }
 function maskName(name){
-  if(!name)return'未登録';
+  if(!name)return '未登録';
   if(!state.settings.anonymousList)return name;
-  const parts=name.trim().split(/\s+/);
-  if(parts.length>=2)return parts[0]+' '+parts[1].charAt(0);
+  const p=name.trim().split(/\s+/);
+  if(p.length>=2)return p[0]+' '+p[1].charAt(0);
   return name.charAt(0)+'＊＊';
 }
 function maskPhone(phone){
-  if(!phone)return'—';
+  if(!phone)return '—';
   if(!state.settings.maskPhone)return phone;
   const s=String(phone);
-  if(s.length<=4)return'＊＊＊';
-  return s.slice(0,3)+'-****-'+s.slice(-4);
+  return s.length<=4?'＊＊＊':s.slice(0,3)+'-****-'+s.slice(-4);
 }
 function initial(name){return name?name.trim().charAt(0):'?'}
-function createEmptyClient(){
-  return{
+function current(){return state.clients.find(c=>c.id===state.selectedId)||null}
+function emptyClient(){
+  return {
     id:null,name:'',nameKana:'',age:'',gender:'',birthDate:'',phone:'',address:'',
-    disabilityLevel:'',recipientNumber:'',officeName:'',diseases:[],diseaseSymptoms:{},
-    conditions:[],treatmentDetails:'',notes:'',specialNotes:'',emergencyName:'',
-    emergencyRelation:'',emergencyPhone:'',emergencyNotes:''
+    officeName:'',disabilityLevel:'',notes:'',careDetails:'',specialNotes:'',
+    emergencyName:'',emergencyRelation:'',emergencyPhone:'',emergencyNotes:''
   };
 }
-function selectedClient(){return state.clients.find(c=>c.id===state.selectedId)||null}
-function formData(){return state.formData||createEmptyClient()}
-function filteredClients(){
+function formData(){return state.formData||emptyClient()}
+function offices(){
+  const set=new Set();
+  state.clients.forEach(function(c){ if(c.officeName) set.add(c.officeName); });
+  return ['all'].concat(Array.from(set));
+}
+function filtered(){
   const q=state.search.trim().toLowerCase();
-  return state.clients.filter(c=>{
+  return state.clients.filter(function(c){
     const officeOk=state.filterOffice==='all'||c.officeName===state.filterOffice;
     if(!officeOk)return false;
     if(!q)return true;
-    const haystack=[c.name,c.nameKana,c.address,c.officeName,...(c.conditions||[]),...(c.diseases||[])].join(' ').toLowerCase();
-    return haystack.includes(q);
+    const hay=[c.name,c.nameKana,c.address,c.officeName,c.careDetails,c.specialNotes].join(' ').toLowerCase();
+    return hay.includes(q);
   });
 }
-function resetLockTimer(){
+function resetLock(){
   clearTimeout(lockTimer);
   if(state.locked)return;
-  const min=Number(state.settings.autoLockMinutes||0);
-  if(!min)return;
-  lockTimer=setTimeout(()=>{
+  const m=Number(state.settings.autoLockMinutes||0);
+  if(!m)return;
+  lockTimer=setTimeout(function(){
     state.locked=true;
     state.pinInput='';
     state.pinStage='unlock';
     render();
-  },min*60*1000);
-}
-function showModal(type,title,text){state.modal={type,title,text};render()}
-function closeModal(){state.modal=null;render()}
-function openList(){state.view='list';render()}
-function openDetail(id){state.selectedId=id;state.view='detail';render()}
-function openSettings(){state.view='settings';render()}
-function openOffices(){state.view='offices';render()}
-function startNewForm(){state.formData=createEmptyClient();state.view='form';render()}
-function startEditForm(id){
-  const found=state.clients.find(c=>c.id===id);
-  if(!found)return;
-  state.formData=JSON.parse(JSON.stringify(found));
-  state.view='form';
-  render();
-}
-function closeForm(){
-  state.formData=null;
-  if(state.selectedId&&state.clients.find(c=>c.id===state.selectedId)){state.view='detail';}
-  else{state.view='list';}
-  render();
+  },m*60*1000);
 }
 function savePin(pin){localStorage.setItem(PIN_KEY,pin)}
-function verifyPin(pin){return localStorage.getItem(PIN_KEY)===pin}
+function checkPin(pin){return localStorage.getItem(PIN_KEY)===pin}
 function submitPin(){
   const pin=state.pinInput.trim();
   if(!/^\d{4}$/.test(pin))return;
@@ -259,7 +209,8 @@ function submitPin(){
       state.pinInput='';
       state.firstPin='';
       state.pinStage='setup';
-      showModal('info','PINが一致しません','もう一度4桁のPINを設定してください。');
+      alert('PINが一致しません');
+      render();
       return;
     }
     savePin(pin);
@@ -268,325 +219,231 @@ function submitPin(){
     state.firstPin='';
     state.pinStage='unlock';
     render();
-    resetLockTimer();
+    resetLock();
     return;
   }
   if(state.pinStage==='unlock'){
-    if(verifyPin(pin)){
+    if(checkPin(pin)){
       state.locked=false;
       state.pinInput='';
       render();
-      resetLockTimer();
+      resetLock();
     }else{
       state.pinInput='';
-      showModal('info','PINが違います','入力した4桁のPINを確認してください。');
+      alert('PINが違います');
+      render();
     }
   }
 }
 function headerTitle(){
-  if(state.view==='detail')return'利用者詳細';
+  if(state.view==='detail')return '利用者詳細';
   if(state.view==='form')return formData().id?'編集':'新規登録';
-  if(state.view==='settings')return'設定';
-  if(state.view==='offices')return'事業所管理';
-  return'';
+  if(state.view==='settings')return '設定';
+  return '';
 }
-
-function renderListView(){
-  const clients=filteredClients();
+function renderList(){
+  let html='';
+  const arr=filtered();
   const total=state.clients.length;
-  return `
-<div class="card search">
-  <div>🔍</div>
-  <input id="searchInput" type="text" placeholder="名前・症状・疾患・住所で検索..." value="${esc(state.search)}" />
-  ${state.search?'<button id="clearSearchBtn" class="clear-btn">✕</button>':''}
-</div>
-${state.offices.length?`<div class="chips">${['all',...state.offices].map(name=>`<button class="chip ${state.filterOffice===name?'active':''}" data-office-filter="${esc(name)}">${name==='all'?'すべて':esc(name)}</button>`).join('')}</div>`:''}
-<div class="muted" style="margin:0 4px 12px;">${total===0?'利用者を登録しましょう':`${clients.length}名${state.search||state.filterOffice!=='all'?` / 全${total}名`:''} の利用者`}</div>
-${total===0
-?`<div class="card empty"><div class="emptyIcon">👤</div><div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px;">まだ利用者が登録されていません</div><div style="font-size:13px;">右上の「＋」から新規登録できます</div><div style="font-size:12px;margin-top:8px;color:var(--accent);">先に事業所を登録しておくと便利です</div></div>`
-:clients.length===0
-?`<div class="card empty">該当する利用者がいません</div>`
-:`<div class="list">${clients.map(c=>`<button class="item" data-open-detail="${c.id}"><div class="avatar">${esc(initial(c.name))}</div><div class="itemMain"><div class="nameRow"><div class="name">${esc(maskName(c.name))}</div><div class="muted">${c.age?esc(c.age)+'歳':''}</div>${c.disabilityLevel?`<span class="miniBadge">${esc(c.disabilityLevel)}</span>`:''}</div>${c.officeName?`<div class="office">🏢 ${esc(c.officeName)}</div>`:''}${(c.diseases||[]).length?`<div class="tags">${(c.diseases||[]).slice(0,2).map(d=>`<span class="tag purple">${esc(d.length>10?d.slice(0,10)+'…':d)}</span>`).join('')}</div>`:''}${(c.conditions||[]).length?`<div class="tags">${(c.conditions||[]).slice(0,3).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`:''}</div><div class="muted" style="margin-top:12px;">›</div></button>`).join('')}</div>`}
-`;
+  html+='<div class="card search"><div>🔍</div><input id="searchInput" type="text" placeholder="名前・住所・ケア内容で検索..." value="'+esc(state.search)+'">';
+  if(state.search) html+='<button id="clearSearchBtn" class="iconBtn" style="width:24px;height:24px;border-radius:999px;background:var(--border);color:var(--textLight);">✕</button>';
+  html+='</div>';
+  const off=offices();
+  if(off.length>1){
+    html+='<div class="chips">';
+    off.forEach(function(name){
+      html+='<button class="chip '+(state.filterOffice===name?'active':'')+'" data-office-filter="'+esc(name)+'">'+(name==='all'?'すべて':esc(name))+'</button>';
+    });
+    html+='</div>';
+  }
+  html+='<div class="muted" style="margin:0 4px 12px;">'+(total===0?'利用者を登録しましょう':arr.length+'名'+((state.search||state.filterOffice!=='all')?' / 全'+total+'名':'')+' の利用者')+'</div>';
+  if(total===0){
+    html+='<div class="card empty"><div class="emptyIcon">👤</div><div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px;">まだ利用者が登録されていません</div><div style="font-size:13px;">右上の「＋」から新規登録できます</div></div>';
+  }else if(arr.length===0){
+    html+='<div class="card empty">該当する利用者がいません</div>';
+  }else{
+    html+='<div class="list">';
+    arr.forEach(function(c){
+      html+='<button class="item" data-open-detail="'+c.id+'">';
+      html+='<div class="avatar">'+esc(initial(c.name))+'</div>';
+      html+='<div class="itemMain">';
+      html+='<div class="nameRow"><div class="name">'+esc(maskName(c.name))+'</div><div class="muted">'+(c.age?esc(c.age)+'歳':'')+'</div>'+(c.disabilityLevel?'<span class="miniBadge">'+esc(c.disabilityLevel)+'</span>':'')+'</div>';
+      if(c.officeName) html+='<div class="office">🏢 '+esc(c.officeName)+'</div>';
+      if(c.careDetails) html+='<div class="muted">'+esc(c.careDetails.length>36?c.careDetails.slice(0,36)+'…':c.careDetails)+'</div>';
+      html+='</div><div class="muted" style="margin-top:12px;">›</div></button>';
+    });
+    html+='</div>';
+  }
+  return html;
 }
-
-function renderDetailView(){
-  const c=selectedClient();
-  if(!c)return '<div class="card empty">利用者が見つかりません</div>';
-  return `
-<div class="card detailTop">
-  <div class="detailAvatar">${esc(initial(c.name))}</div>
-  <div class="detailName">${esc(c.name)}</div>
-  ${c.nameKana?`<div class="detailKana">${esc(c.nameKana)}</div>`:''}
-  <div class="pills">
-    ${c.age?`<span class="pill">${esc(c.age)}歳</span>`:''}
-    ${c.gender?`<span class="pill">${esc(c.gender)}</span>`:''}
-    ${c.disabilityLevel?`<span class="pill accent">${esc(c.disabilityLevel)}</span>`:''}
-  </div>
-  ${c.officeName?`<div style="margin-top:8px;font-size:12px;color:var(--primary);font-weight:800;">🏢 ${esc(c.officeName)}</div>`:''}
-</div>
-
-<div class="card section">
-  <div class="sectionTitle">👤 基本情報</div>
-  <div class="infoRow"><div class="infoLabel">住所</div><div class="infoValue">${esc(c.address||'—')}</div></div>
-  <div class="infoRow"><div class="infoLabel">電話番号</div><div class="infoValue">${esc(maskPhone(c.phone))}</div></div>
-  <div class="infoRow"><div class="infoLabel">生年月日</div><div class="infoValue">${esc(formatDate(c.birthDate)||'—')}</div></div>
-  <div class="infoRow"><div class="infoLabel">受給者番号</div><div class="infoValue">${esc(c.recipientNumber||'—')}</div></div>
-  ${c.notes?`<div class="box" style="margin-top:10px;">${esc(c.notes)}</div>`:''}
-</div>
-
-${(c.diseases||[]).length?`<div class="card section"><div class="sectionTitle purple">🩺 障害・疾患情報</div>${(c.diseases||[]).map(name=>{const info=DISEASE_LIST.find(d=>d.name===name);const custom=(c.diseaseSymptoms||{})[name]||'';return `<div class="disease"><div class="diseaseName">${esc(name)}</div>${info?`<div class="diseaseText">${esc(info.symptoms)}</div>`:''}${custom?`<div class="diseaseText" style="margin-top:8px;padding-top:8px;border-top:1px dashed rgba(108,92,231,.3);"><strong>▶ 個別の症状メモ：</strong><br>${esc(custom)}</div>`:''}</div>`}).join('')}</div>`:''}
-
-<div class="card section">
-  <div class="sectionTitle">📋 処置・ケア内容</div>
-  ${(c.conditions||[]).length?`<div class="tags" style="margin-bottom:10px;">${(c.conditions||[]).map(tag=>`<span class="tag" style="font-size:12px;padding:4px 10px;border-radius:8px;">${esc(tag)}</span>`).join('')}</div>`:''}
-  ${c.treatmentDetails?`<div class="box">${esc(c.treatmentDetails)}</div>`:''}
-  ${(!(c.conditions||[]).length&&!c.treatmentDetails)?`<div class="muted">未登録</div>`:''}
-</div>
-
-${c.specialNotes?`<div class="card section"><div class="sectionTitle accent">⭐ 特筆事項</div><div class="box accentBox">${esc(c.specialNotes)}</div></div>`:''}
-
-<div class="card section">
-  <div class="sectionTitle">🚨 緊急連絡先</div>
-  <div class="infoRow"><div class="infoLabel">連絡先名</div><div class="infoValue">${esc(c.emergencyName||'—')}</div></div>
-  <div class="infoRow"><div class="infoLabel">続柄</div><div class="infoValue">${esc(c.emergencyRelation||'—')}</div></div>
-  <div class="infoRow"><div class="infoLabel">電話番号</div><div class="infoValue danger">${esc(maskPhone(c.emergencyPhone))}</div></div>
-  ${c.emergencyNotes?`<div class="box dangerBox" style="margin-top:10px;">${esc(c.emergencyNotes)}</div>`:''}
-</div>
-
-<div class="rowBtns">
-  <button class="btn primary" style="flex:1;" id="editClientBtn">編集する</button>
-  <button class="btn ghostDanger" id="deleteClientBtn">🗑</button>
-</div>
-`;
+function renderDetail(){
+  const c=current();
+  if(!c) return '<div class="card empty">利用者が見つかりません</div>';
+  let html='';
+  html+='<div class="card detailTop"><div class="detailAvatar">'+esc(initial(c.name))+'</div><div class="detailName">'+esc(c.name)+'</div>';
+  if(c.nameKana) html+='<div class="muted" style="margin-bottom:8px;">'+esc(c.nameKana)+'</div>';
+  html+='<div class="pills">';
+  if(c.age) html+='<span class="pill">'+esc(c.age)+'歳</span>';
+  if(c.gender) html+='<span class="pill">'+esc(c.gender)+'</span>';
+  if(c.disabilityLevel) html+='<span class="pill accent">'+esc(c.disabilityLevel)+'</span>';
+  html+='</div>';
+  if(c.officeName) html+='<div style="margin-top:8px;font-size:12px;color:var(--primary);font-weight:800;">🏢 '+esc(c.officeName)+'</div>';
+  html+='</div>';
+  html+='<div class="card section"><div class="sectionTitle">👤 基本情報</div>';
+  html+='<div class="infoRow"><div class="infoLabel">住所</div><div class="infoValue">'+esc(c.address||'—')+'</div></div>';
+  html+='<div class="infoRow"><div class="infoLabel">電話番号</div><div class="infoValue">'+esc(maskPhone(c.phone))+'</div></div>';
+  html+='<div class="infoRow"><div class="infoLabel">生年月日</div><div class="infoValue">'+esc(formatDate(c.birthDate)||'—')+'</div></div>';
+  html+='<div class="infoRow"><div class="infoLabel">事業所</div><div class="infoValue">'+esc(c.officeName||'—')+'</div></div>';
+  if(c.notes) html+='<div class="box" style="margin-top:10px;">'+esc(c.notes)+'</div>';
+  html+='</div>';
+  html+='<div class="card section"><div class="sectionTitle">📋 ケア内容</div>'+(c.careDetails?'<div class="box">'+esc(c.careDetails)+'</div>':'<div class="muted">未登録</div>')+'</div>';
+  if(c.specialNotes) html+='<div class="card section"><div class="sectionTitle accent">⭐ 特筆事項</div><div class="box accentBox">'+esc(c.specialNotes)+'</div></div>';
+  html+='<div class="card section"><div class="sectionTitle">🚨 緊急連絡先</div>';
+  html+='<div class="infoRow"><div class="infoLabel">連絡先名</div><div class="infoValue">'+esc(c.emergencyName||'—')+'</div></div>';
+  html+='<div class="infoRow"><div class="infoLabel">続柄</div><div class="infoValue">'+esc(c.emergencyRelation||'—')+'</div></div>';
+  html+='<div class="infoRow"><div class="infoLabel">電話番号</div><div class="infoValue danger">'+esc(maskPhone(c.emergencyPhone))+'</div></div>';
+  if(c.emergencyNotes) html+='<div class="box dangerBox" style="margin-top:10px;">'+esc(c.emergencyNotes)+'</div>';
+  html+='</div>';
+  html+='<div class="rowBtns"><button class="btn primary" style="flex:1;" id="editClientBtn">編集する</button><button class="btn ghostDanger" id="deleteClientBtn">🗑</button></div>';
+  return html;
 }
-
-function renderFormView(){
+function renderForm(){
   const f=formData();
-  return `
-<form id="clientForm" class="card section">
-  <div class="sectionTitle">🏢 事業所</div>
-  <div class="field">
-    <label>所属事業所</label>
-    ${state.offices.length
-      ?`<select class="select" name="officeName"><option value="">選択してください</option>${state.offices.map(o=>`<option value="${esc(o)}" ${f.officeName===o?'selected':''}>${esc(o)}</option>`).join('')}</select>`
-      :`<div class="box smallNote">設定画面から事業所を先に登録してください</div>`}
-  </div>
-
-  <div class="sectionTitle">👤 基本情報</div>
-  <div class="formGrid">
-    <div class="field"><label>お名前 <span class="req">必須</span></label><input class="input" name="name" value="${esc(f.name)}" placeholder="山田 太郎"></div>
-    <div class="field"><label>ふりがな</label><input class="input" name="nameKana" value="${esc(f.nameKana)}" placeholder="やまだ たろう"></div>
-    <div class="fieldRow">
-      <div class="field"><label>年齢</label><input class="input" type="number" name="age" value="${esc(f.age)}" placeholder="65"></div>
-      <div class="field"><label>性別</label><select class="select" name="gender"><option value="">選択</option>${['男性','女性','その他'].map(g=>`<option value="${g}" ${f.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
-    </div>
-    <div class="field"><label>生年月日</label><input class="input" type="date" name="birthDate" value="${esc(f.birthDate)}"></div>
-    <div class="field"><label>電話番号</label><input class="input" type="tel" name="phone" value="${esc(f.phone)}" placeholder="090-1234-5678"></div>
-    <div class="field"><label>住所</label><input class="input" name="address" value="${esc(f.address)}" placeholder="東京都○○区..."></div>
-    <div class="fieldRow">
-      <div class="field"><label>障害支援区分</label><select class="select" name="disabilityLevel"><option value="">選択</option>${DISABILITY_LEVELS.map(level=>`<option value="${level}" ${f.disabilityLevel===level?'selected':''}>${level}</option>`).join('')}</select></div>
-      <div class="field"><label>受給者番号</label><input class="input" name="recipientNumber" value="${esc(f.recipientNumber)}" placeholder="1234567890"></div>
-    </div>
-    <div class="field"><label>メモ</label><textarea class="textarea" name="notes" placeholder="その他の基本情報...">${esc(f.notes)}</textarea></div>
-  </div>
-
-  <div class="sectionTitle purple">🩺 障害・疾患</div>
-  <div class="helper">該当する疾患を選択すると、代表的な症状が表示されます。</div>
-  <div class="selectors">${DISEASE_LIST.map(d=>`<button type="button" class="selector purple ${f.diseases.includes(d.name)?'active':''}" data-disease-toggle="${esc(d.name)}">${f.diseases.includes(d.name)?'✓ ':''}${esc(d.name.length>12?d.name.slice(0,12)+'…':d.name)}</button>`).join('')}</div>
-  <div class="inlineAdd"><input class="input" id="customDiseaseInput" placeholder="その他の疾患を追加..."><button type="button" class="btn" id="addDiseaseBtn" style="background:var(--purple);color:#fff;padding:0 14px;border-radius:10px;">追加</button></div>
-  <div>${(f.diseases||[]).map(name=>{const info=DISEASE_LIST.find(d=>d.name===name);return `<div class="disease"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px;"><div class="diseaseName">${esc(name)}</div><button type="button" class="miniX" data-disease-remove="${esc(name)}" style="color:var(--purple);font-size:18px;">×</button></div>${info?`<div class="box" style="background:rgba(255,255,255,.65);margin-bottom:8px;"><div style="font-size:11px;font-weight:800;color:var(--purple);margin-bottom:4px;">📋 代表的な症状</div><div class="diseaseText">${esc(info.symptoms)}</div></div>`:''}<div class="field" style="margin:0;"><label style="color:var(--purple);">この利用者の個別症状メモ</label><textarea class="textarea" data-disease-note="${esc(name)}">${esc((f.diseaseSymptoms||{})[name]||'')}</textarea></div></div>`}).join('')}</div>
-
-  <div class="sectionTitle">📋 処置・ケア内容</div>
-  <div class="selectors">${CONDITION_TAGS.map(tag=>`<button type="button" class="selector ${f.conditions.includes(tag)?'active':''}" data-condition-toggle="${esc(tag)}">${f.conditions.includes(tag)?'✓ ':''}${esc(tag)}</button>`).join('')}</div>
-  <div class="inlineAdd"><input class="input" id="customConditionInput" placeholder="その他の処置を追加..."><button type="button" class="btn primary" id="addConditionBtn" style="padding:0 14px;border-radius:10px;">追加</button></div>
-  ${(f.conditions||[]).filter(tag=>!CONDITION_TAGS.includes(tag)).length?`<div class="customTags">${(f.conditions||[]).filter(tag=>!CONDITION_TAGS.includes(tag)).map(tag=>`<span class="customTag">${esc(tag)}<button type="button" class="miniX" data-condition-remove="${esc(tag)}">×</button></span>`).join('')}</div>`:''}
-  <div class="field"><label>処置の詳細</label><textarea class="textarea" name="treatmentDetails" placeholder="吸引の頻度、体位変換のスケジュール、服薬情報など...">${esc(f.treatmentDetails)}</textarea></div>
-
-  <div class="sectionTitle accent">⭐ 特筆事項</div>
-  <div class="field"><textarea class="textarea large" name="specialNotes" style="background:rgba(253,240,235,.5);border-color:rgba(212,118,78,.25);" placeholder="注意事項や引き継ぎ事項など...">${esc(f.specialNotes)}</textarea></div>
-
-  <div class="sectionTitle">🚨 緊急連絡先</div>
-  <div class="formGrid">
-    <div class="fieldRow">
-      <div class="field"><label>連絡先名</label><input class="input" name="emergencyName" value="${esc(f.emergencyName)}" placeholder="山田 花子"></div>
-      <div class="field"><label>続柄</label><input class="input" name="emergencyRelation" value="${esc(f.emergencyRelation)}" placeholder="配偶者"></div>
-    </div>
-    <div class="field"><label>電話番号</label><input class="input" type="tel" name="emergencyPhone" value="${esc(f.emergencyPhone)}" placeholder="090-9876-5432"></div>
-    <div class="field"><label>緊急時の注意事項</label><textarea class="textarea" name="emergencyNotes" placeholder="緊急時の対応手順など...">${esc(f.emergencyNotes)}</textarea></div>
-  </div>
-
-  <div class="rowBtns" style="margin-top:24px;">
-    <button type="button" class="btn secondary" id="cancelFormBtn">キャンセル</button>
-    <button type="submit" class="btn primary" style="flex:1;">${f.id?'保存する':'登録する'}</button>
-  </div>
-</form>
-`;
+  let html='';
+  html+='<form id="clientForm" class="card section">';
+  html+='<div class="sectionTitle">👤 基本情報</div><div class="formGrid">';
+  html+='<div class="field"><label>お名前 <span class="req">必須</span></label><input class="input" name="name" value="'+esc(f.name)+'" placeholder="山田 太郎"></div>';
+  html+='<div class="field"><label>ふりがな</label><input class="input" name="nameKana" value="'+esc(f.nameKana)+'" placeholder="やまだ たろう"></div>';
+  html+='<div class="fieldRow"><div class="field"><label>年齢</label><input class="input" type="number" name="age" value="'+esc(f.age)+'" placeholder="65"></div><div class="field"><label>性別</label><select class="select" name="gender"><option value="">選択</option><option value="男性"'+(f.gender==='男性'?' selected':'')+'>男性</option><option value="女性"'+(f.gender==='女性'?' selected':'')+'>女性</option><option value="その他"'+(f.gender==='その他'?' selected':'')+'>その他</option></select></div></div>';
+  html+='<div class="field"><label>生年月日</label><input class="input" type="date" name="birthDate" value="'+esc(f.birthDate)+'"></div>';
+  html+='<div class="field"><label>電話番号</label><input class="input" type="tel" name="phone" value="'+esc(f.phone)+'" placeholder="090-1234-5678"></div>';
+  html+='<div class="field"><label>住所</label><input class="input" name="address" value="'+esc(f.address)+'" placeholder="東京都○○区..."></div>';
+  html+='<div class="field"><label>事業所</label><input class="input" name="officeName" value="'+esc(f.officeName)+'" placeholder="○○事業所"></div>';
+  html+='<div class="field"><label>障害支援区分</label><select class="select" name="disabilityLevel"><option value="">選択</option>';
+  ['区分1','区分2','区分3','区分4','区分5','区分6'].forEach(function(level){ html+='<option value="'+level+'"'+(f.disabilityLevel===level?' selected':'')+'>'+level+'</option>'; });
+  html+='</select></div>';
+  html+='<div class="field"><label>基本メモ</label><textarea class="textarea" name="notes" placeholder="その他の基本情報...">'+esc(f.notes)+'</textarea></div>';
+  html+='</div>';
+  html+='<div class="sectionTitle">📋 ケア内容</div><div class="field"><label>ケア内容・処置内容</label><textarea class="textarea large" name="careDetails" placeholder="吸引、体位変換、見守り、医療的ケアなど...">'+esc(f.careDetails)+'</textarea></div>';
+  html+='<div class="sectionTitle accent">⭐ 特筆事項</div><div class="field"><textarea class="textarea large" name="specialNotes" placeholder="注意事項や引き継ぎ事項など...">'+esc(f.specialNotes)+'</textarea></div>';
+  html+='<div class="sectionTitle">🚨 緊急連絡先</div><div class="formGrid">';
+  html+='<div class="fieldRow"><div class="field"><label>連絡先名</label><input class="input" name="emergencyName" value="'+esc(f.emergencyName)+'" placeholder="山田 花子"></div><div class="field"><label>続柄</label><input class="input" name="emergencyRelation" value="'+esc(f.emergencyRelation)+'" placeholder="配偶者"></div></div>';
+  html+='<div class="field"><label>電話番号</label><input class="input" type="tel" name="emergencyPhone" value="'+esc(f.emergencyPhone)+'" placeholder="090-9876-5432"></div>';
+  html+='<div class="field"><label>緊急時の注意事項</label><textarea class="textarea" name="emergencyNotes" placeholder="緊急時の対応手順など...">'+esc(f.emergencyNotes)+'</textarea></div>';
+  html+='</div>';
+  html+='<div class="rowBtns" style="margin-top:24px;"><button type="button" class="btn secondary" id="cancelFormBtn">キャンセル</button><button type="submit" class="btn primary" style="flex:1;">'+(f.id?'保存する':'登録する')+'</button></div>';
+  html+='</form>';
+  return html;
 }
-
-function renderOfficesView(){
-  return `<div class="card section"><div class="sectionTitle">🏢 事業所の登録・管理</div><div class="helper">利用者登録時に選択できる事業所を管理します。</div>${!state.offices.length?`<div class="empty" style="padding:24px 10px;">まだ事業所が登録されていません</div>`:''}${(state.offices||[]).map(name=>`<div class="officeItem"><div class="officeLeft"><div class="officeBadge">${esc(name.charAt(0))}</div><div style="font-size:14px;font-weight:700;">${esc(name)}</div></div><button class="miniX" data-office-delete="${esc(name)}" style="font-size:18px;color:var(--danger);">🗑</button></div>`).join('')}<div class="inlineAdd" style="margin-top:12px;"><input id="newOfficeInput" class="input" placeholder="事業所名を入力..."><button id="addOfficeBtn" class="btn primary" style="padding:0 16px;border-radius:10px;">追加</button></div><div class="rowBtns" style="margin-top:18px;"><button class="btn secondary" id="officeBackBtn" style="flex:1;">戻る</button></div></div>`;
+function renderSettings(){
+  let html='';
+  html+='<div class="card section"><div class="sectionTitle">🔐 セキュリティ設定</div><div class="settingsList">';
+  html+='<div class="settingRow"><div><div style="font-size:14px;font-weight:800;">一覧を匿名表示</div><div class="helper">一覧画面で氏名を伏せ気味に表示します。</div></div><button class="toggle '+(state.settings.anonymousList?'active':'')+'" id="toggleAnonymous"></button></div>';
+  html+='<div class="settingRow"><div><div style="font-size:14px;font-weight:800;">電話番号をマスク表示</div><div class="helper">詳細画面でも電話番号の一部を隠します。</div></div><button class="toggle '+(state.settings.maskPhone?'active':'')+'" id="toggleMaskPhone"></button></div>';
+  html+='<div class="settingRow"><div><div style="font-size:14px;font-weight:800;">自動ロック</div><div class="helper">無操作で一定時間後にPINロックします。</div></div><select id="autoLockSelect" class="select" style="width:110px;padding:8px 10px;">';
+  [1,3,5,10,15].forEach(function(n){ html+='<option value="'+n+'"'+(Number(state.settings.autoLockMinutes)===n?' selected':'')+'>'+n+'分</option>'; });
+  html+='</select></div></div></div>';
+  html+='<div class="card section"><div class="sectionTitle">💾 データ管理</div><div class="helper">バックアップは手動で安全な場所に保管してください。</div><div class="rowBtns" style="margin-bottom:10px;"><button class="btn primary" id="exportBtn" style="flex:1;">バックアップ書き出し</button><label class="btn secondary" style="display:flex;align-items:center;justify-content:center;flex:1;">復元<input id="importInput" type="file" accept="application/json" style="display:none"></label></div><div class="rowBtns"><button class="btn danger" id="clearAllBtn" style="flex:1;">全データ削除</button></div></div>';
+  html+='<div class="card section"><div class="sectionTitle">📱 使い方メモ</div><div class="helper">・このアプリは端末内保存です。<br>・ホーム画面に追加するとアプリ風に使えます。<br>・本体パスコード、Face ID を必ず設定してください。<br>・バックアップJSONは他人に送らないでください。</div><div class="rowBtns" style="margin-top:18px;"><button class="btn secondary" id="changePinBtn" style="flex:1;">PINを再設定</button><button class="btn secondary" id="settingsBackBtn" style="flex:1;">戻る</button></div></div>';
+  return html;
 }
-
-function renderSettingsView(){
-  return `<div class="card section"><div class="sectionTitle">🔐 セキュリティ設定</div><div class="settingsList"><div class="settingRow"><div><div style="font-size:14px;font-weight:800;">一覧を匿名表示</div><div class="smallNote">一覧画面で氏名を伏せ気味に表示します。</div></div><button class="toggle ${state.settings.anonymousList?'active':''}" id="toggleAnonymous"></button></div><div class="settingRow"><div><div style="font-size:14px;font-weight:800;">電話番号をマスク表示</div><div class="smallNote">詳細画面でも電話番号の一部を隠します。</div></div><button class="toggle ${state.settings.maskPhone?'active':''}" id="toggleMaskPhone"></button></div><div class="settingRow"><div><div style="font-size:14px;font-weight:800;">自動ロック</div><div class="smallNote">無操作で一定時間後にPINロックします。</div></div><select id="autoLockSelect" class="select" style="width:110px;padding:8px 10px;">${[1,3,5,10,15].map(n=>`<option value="${n}" ${Number(state.settings.autoLockMinutes)===n?'selected':''}>${n}分</option>`).join('')}</select></div></div></div><div class="card section"><div class="sectionTitle">💾 データ管理</div><div class="helper">バックアップは手動で安全な場所に保管してください。</div><div class="rowBtns" style="margin-bottom:10px;"><button class="btn primary" id="exportBtn" style="flex:1;">バックアップ書き出し</button><label class="btn secondary" style="display:flex;align-items:center;justify-content:center;flex:1;">復元<input id="importInput" type="file" accept="application/json" style="display:none"></label></div><div class="rowBtns"><button class="btn danger" id="clearAllBtn" style="flex:1;">全データ削除</button></div></div><div class="card section"><div class="sectionTitle">📱 使い方メモ</div><div class="smallNote">・このアプリは端末内保存です。<br>・ホーム画面に追加するとアプリ風に使えます。<br>・本体パスコード、Face ID を必ず設定してください。<br>・バックアップJSONは他人に送らないでください。</div><div class="rowBtns" style="margin-top:18px;"><button class="btn secondary" id="changePinBtn" style="flex:1;">PINを再設定</button><button class="btn secondary" id="settingsBackBtn" style="flex:1;">戻る</button></div></div>`;
-}
-
 function renderModal(){
   if(!state.modal)return '';
-  const danger=state.modal.type==='delete'||state.modal.type==='clear';
-  return `<div class="modal"><div class="modalCard"><div class="modalIcon ${danger?'danger':''}">${danger?'🗑':'ℹ️'}</div><div class="modalTitle">${esc(state.modal.title)}</div><div class="modalText">${esc(state.modal.text)}</div><div class="rowBtns">${state.modal.type==='delete'?`<button class="btn secondary" id="modalCancelBtn" style="flex:1;">キャンセル</button><button class="btn danger" id="modalDeleteBtn" style="flex:1;">削除する</button>`:state.modal.type==='clear'?`<button class="btn secondary" id="modalCancelBtn" style="flex:1;">キャンセル</button><button class="btn danger" id="modalClearBtn" style="flex:1;">削除する</button>`:`<button class="btn primary" id="modalOkBtn" style="flex:1;">OK</button>`}</div></div></div>`;
+  let html='';
+  html+='<div class="overlay"><div class="dialog"><div class="dialogTitle">'+esc(state.modal.title)+'</div><div class="dialogText">'+esc(state.modal.text)+'</div><div class="rowBtns">';
+  if(state.modal.type==='delete'){
+    html+='<button class="btn secondary" id="modalCancelBtn" style="flex:1;">キャンセル</button><button class="btn danger" id="modalDeleteBtn" style="flex:1;">削除する</button>';
+  }else if(state.modal.type==='clear'){
+    html+='<button class="btn secondary" id="modalCancelBtn" style="flex:1;">キャンセル</button><button class="btn danger" id="modalClearBtn" style="flex:1;">削除する</button>';
+  }else{
+    html+='<button class="btn primary" id="modalOkBtn" style="flex:1;">OK</button>';
+  }
+  html+='</div></div></div>';
+  return html;
 }
-
-function renderLockScreen(){
+function renderLock(){
   if(!state.locked)return '';
   let title='重訪ケア管理';
   let text='4桁PINを入力してください';
-  if(state.pinStage==='setup'){title='PINを設定';text='初回設定です。4桁の数字を入力してください';}
-  else if(state.pinStage==='confirm'){title='PINを確認';text='同じ4桁PINをもう一度入力してください';}
-  return `<div class="lock"><div class="lockCard"><div class="lockBadge">🔒</div><div class="modalTitle">${esc(title)}</div><div class="modalText" style="margin-bottom:14px;">${esc(text)}</div><input id="pinField" class="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••" value="${esc(state.pinInput)}"><div class="rowBtns"><button class="btn primary" id="pinSubmitBtn" style="flex:1;">OK</button></div><div class="smallNote" style="margin-top:14px;">このアプリは通信せず、入力データはこの端末のブラウザに保存されます。</div></div></div>`;
+  if(state.pinStage==='setup'){ title='PINを設定'; text='初回設定です。4桁の数字を入力してください'; }
+  else if(state.pinStage==='confirm'){ title='PINを確認'; text='同じ4桁PINをもう一度入力してください'; }
+  return '<div class="lock"><div class="lockCard"><div class="lockBadge">🔒</div><div class="dialogTitle">'+esc(title)+'</div><div class="dialogText" style="margin-bottom:14px;">'+esc(text)+'</div><input id="pinField" class="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••" value="'+esc(state.pinInput)+'"><div class="rowBtns"><button class="btn primary" id="pinSubmitBtn" style="flex:1;">OK</button></div><div class="helper" style="margin-top:14px;">このアプリは通信せず、入力データはこの端末のブラウザに保存されます。</div></div></div>';
 }
-
 function render(){
-  app.innerHTML=`<div class="header"><div class="headerRow">${state.view!=='list'?`<button class="iconBtn" id="backBtn">‹</button>`:`<div class="brand"><div class="brandIcon">💚</div><div><div class="title">重訪ケア管理</div><div class="subtitle">個人利用専用・端末保存</div></div></div>`}<div style="font-size:15px;font-weight:700;min-width:56px;text-align:center;">${esc(headerTitle())}</div>${state.view==='list'?`<div class="actions"><button class="iconBtn" id="officesBtn">🏢</button><button class="iconBtn" id="settingsBtn">⚙️</button><button class="iconBtn white" id="addBtn">＋</button></div>`:`<div style="width:38px;"></div>`}</div><div class="security">通信なし / localStorage保存 / PINロック対応。実データは端末管理にご注意ください。</div></div><main class="main">${state.view==='detail'?renderDetailView():state.view==='form'?renderFormView():state.view==='settings'?renderSettingsView():state.view==='offices'?renderOfficesView():renderListView()}</main>${renderModal()}${renderLockScreen()}`;
+  let html='';
+  html+='<div class="header"><div class="headerRow">';
+  if(state.view!=='list'){
+    html+='<button class="iconBtn" id="backBtn">‹</button>';
+  }else{
+    html+='<div class="brand"><div class="brandIcon">💚</div><div><div class="title">重訪ケア管理</div><div class="subtitle">個人利用専用・端末保存</div></div></div>';
+  }
+  html+='<div style="font-size:15px;font-weight:700;min-width:56px;text-align:center;">'+esc(headerTitle())+'</div>';
+  if(state.view==='list'){
+    html+='<div class="actions"><button class="iconBtn" id="settingsBtn">⚙️</button><button class="iconBtn white" id="addBtn">＋</button></div>';
+  }else{
+    html+='<div style="width:38px;"></div>';
+  }
+  html+='</div><div class="security">通信なし / localStorage保存 / PINロック対応。実データは端末管理にご注意ください。</div></div>';
+  html+='<main class="main">';
+  if(state.view==='detail') html+=renderDetail();
+  else if(state.view==='form') html+=renderForm();
+  else if(state.view==='settings') html+=renderSettings();
+  else html+=renderList();
+  html+='</main>';
+  html+=renderModal();
+  html+=renderLock();
+  app.innerHTML=html;
   bindEvents();
 }
-
 function bindEvents(){
   const pinField=document.getElementById('pinField');
   if(pinField){
     pinField.focus();
-    pinField.addEventListener('input',e=>{state.pinInput=e.target.value.replace(/\D/g,'').slice(0,4);});
-    pinField.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitPin();}});
+    pinField.addEventListener('input',function(e){ state.pinInput=e.target.value.replace(/\\D/g,'').slice(0,4); });
+    pinField.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); submitPin(); } });
   }
   const pinSubmitBtn=document.getElementById('pinSubmitBtn');
-  if(pinSubmitBtn)pinSubmitBtn.onclick=submitPin;
-
+  if(pinSubmitBtn) pinSubmitBtn.onclick=submitPin;
   if(state.locked){
-    bindModalEvents();
+    bindModal();
     return;
   }
-
-  resetLockTimer();
-
+  resetLock();
   const backBtn=document.getElementById('backBtn');
-  if(backBtn)backBtn.onclick=()=>{if(state.view==='form'){closeForm();return;}openList();};
-
+  if(backBtn) backBtn.onclick=function(){ if(state.view==='form'){ closeForm(); return; } openList(); };
   const addBtn=document.getElementById('addBtn');
-  if(addBtn)addBtn.onclick=startNewForm;
-
+  if(addBtn) addBtn.onclick=startNewForm;
   const settingsBtn=document.getElementById('settingsBtn');
-  if(settingsBtn)settingsBtn.onclick=openSettings;
-
-  const officesBtn=document.getElementById('officesBtn');
-  if(officesBtn)officesBtn.onclick=openOffices;
-
+  if(settingsBtn) settingsBtn.onclick=openSettings;
   const searchInput=document.getElementById('searchInput');
-  if(searchInput)searchInput.oninput=e=>{state.search=e.target.value;render();};
-
+  if(searchInput) searchInput.oninput=function(e){ state.search=e.target.value; render(); };
   const clearSearchBtn=document.getElementById('clearSearchBtn');
-  if(clearSearchBtn)clearSearchBtn.onclick=()=>{state.search='';render();};
-
-  document.querySelectorAll('[data-office-filter]').forEach(btn=>{
-    btn.onclick=()=>{state.filterOffice=btn.getAttribute('data-office-filter');render();};
+  if(clearSearchBtn) clearSearchBtn.onclick=function(){ state.search=''; render(); };
+  document.querySelectorAll('[data-office-filter]').forEach(function(btn){
+    btn.onclick=function(){ state.filterOffice=btn.getAttribute('data-office-filter'); render(); };
   });
-
-  document.querySelectorAll('[data-open-detail]').forEach(btn=>{
-    btn.onclick=()=>openDetail(btn.getAttribute('data-open-detail'));
+  document.querySelectorAll('[data-open-detail]').forEach(function(btn){
+    btn.onclick=function(){ openDetail(btn.getAttribute('data-open-detail')); };
   });
-
   const editClientBtn=document.getElementById('editClientBtn');
-  if(editClientBtn)editClientBtn.onclick=()=>startEditForm(state.selectedId);
-
+  if(editClientBtn) editClientBtn.onclick=startEditForm;
   const deleteClientBtn=document.getElementById('deleteClientBtn');
-  if(deleteClientBtn)deleteClientBtn.onclick=()=>showModal('delete','削除しますか？','この利用者情報を削除します。この操作は取り消せません。');
-
-  bindFormEvents();
-  bindOfficeEvents();
-  bindSettingsEvents();
-  bindModalEvents();
+  if(deleteClientBtn) deleteClientBtn.onclick=function(){ state.modal={type:'delete',title:'削除しますか？',text:'この利用者情報を削除します。この操作は取り消せません。'}; render(); };
+  bindForm();
+  bindSettings();
+  bindModal();
 }
-
-function bindFormEvents(){
+function bindForm(){
   const form=document.getElementById('clientForm');
   if(!form)return;
-
-  document.querySelectorAll('[data-disease-toggle]').forEach(btn=>{
-    btn.onclick=()=>{
-      const name=btn.getAttribute('data-disease-toggle');
-      const f=state.formData;
-      if(f.diseases.includes(name)){
-        f.diseases=f.diseases.filter(d=>d!==name);
-        delete f.diseaseSymptoms[name];
-      }else{
-        f.diseases.push(name);
-      }
-      render();
-    };
-  });
-
-  document.querySelectorAll('[data-disease-remove]').forEach(btn=>{
-    btn.onclick=()=>{
-      const name=btn.getAttribute('data-disease-remove');
-      const f=state.formData;
-      f.diseases=f.diseases.filter(d=>d!==name);
-      delete f.diseaseSymptoms[name];
-      render();
-    };
-  });
-
-  document.querySelectorAll('[data-condition-toggle]').forEach(btn=>{
-    btn.onclick=()=>{
-      const tag=btn.getAttribute('data-condition-toggle');
-      const f=state.formData;
-      if(f.conditions.includes(tag)){f.conditions=f.conditions.filter(t=>t!==tag);}
-      else{f.conditions.push(tag);}
-      render();
-    };
-  });
-
-  document.querySelectorAll('[data-condition-remove]').forEach(btn=>{
-    btn.onclick=()=>{
-      const tag=btn.getAttribute('data-condition-remove');
-      state.formData.conditions=state.formData.conditions.filter(t=>t!==tag);
-      render();
-    };
-  });
-
-  document.querySelectorAll('[data-disease-note]').forEach(el=>{
-    el.oninput=()=>{
-      const name=el.getAttribute('data-disease-note');
-      state.formData.diseaseSymptoms[name]=el.value;
-    };
-  });
-
-  const addDiseaseBtn=document.getElementById('addDiseaseBtn');
-  if(addDiseaseBtn)addDiseaseBtn.onclick=()=>{
-    const input=document.getElementById('customDiseaseInput');
-    const value=(input.value||'').trim();
-    if(!value)return;
-    if(!state.formData.diseases.includes(value))state.formData.diseases.push(value);
-    render();
-  };
-
-  const addConditionBtn=document.getElementById('addConditionBtn');
-  if(addConditionBtn)addConditionBtn.onclick=()=>{
-    const input=document.getElementById('customConditionInput');
-    const value=(input.value||'').trim();
-    if(!value)return;
-    if(!state.formData.conditions.includes(value))state.formData.conditions.push(value);
-    render();
-  };
-
-  const cancelFormBtn=document.getElementById('cancelFormBtn');
-  if(cancelFormBtn)cancelFormBtn.onclick=closeForm;
-
-  form.onsubmit=e=>{
+  const cancel=document.getElementById('cancelFormBtn');
+  if(cancel) cancel.onclick=closeForm;
+  form.onsubmit=function(e){
     e.preventDefault();
     const fd=new FormData(form);
-    const f=state.formData;
-    const client={
-      id:f.id||null,
+    const base=state.formData||emptyClient();
+    const c={
+      id:base.id||null,
       name:String(fd.get('name')||'').trim(),
       nameKana:String(fd.get('nameKana')||'').trim(),
       age:String(fd.get('age')||'').trim(),
@@ -594,136 +451,68 @@ function bindFormEvents(){
       birthDate:String(fd.get('birthDate')||'').trim(),
       phone:String(fd.get('phone')||'').trim(),
       address:String(fd.get('address')||'').trim(),
-      disabilityLevel:String(fd.get('disabilityLevel')||'').trim(),
-      recipientNumber:String(fd.get('recipientNumber')||'').trim(),
       officeName:String(fd.get('officeName')||'').trim(),
-      diseases:[...f.diseases],
-      diseaseSymptoms:{...f.diseaseSymptoms},
-      conditions:[...f.conditions],
-      treatmentDetails:String(fd.get('treatmentDetails')||'').trim(),
+      disabilityLevel:String(fd.get('disabilityLevel')||'').trim(),
       notes:String(fd.get('notes')||'').trim(),
+      careDetails:String(fd.get('careDetails')||'').trim(),
       specialNotes:String(fd.get('specialNotes')||'').trim(),
       emergencyName:String(fd.get('emergencyName')||'').trim(),
       emergencyRelation:String(fd.get('emergencyRelation')||'').trim(),
       emergencyPhone:String(fd.get('emergencyPhone')||'').trim(),
       emergencyNotes:String(fd.get('emergencyNotes')||'').trim()
     };
-    if(!client.name){
-      showModal('info','お名前を入力してください','利用者登録にはお名前が必要です。');
-      return;
-    }
-    if(client.id){
-      state.clients=state.clients.map(item=>item.id===client.id?client:item);
+    if(!c.name){ alert('お名前を入力してください'); return; }
+    if(c.id){
+      state.clients=state.clients.map(function(x){ return x.id===c.id?c:x; });
     }else{
-      client.id=generateId();
-      client.createdAt=new Date().toISOString();
-      state.clients.unshift(client);
+      c.id=makeId();
+      c.createdAt=new Date().toISOString();
+      state.clients.unshift(c);
     }
-    persistAll();
-    state.selectedId=client.id;
+    save();
+    state.selectedId=c.id;
     state.formData=null;
     state.view='detail';
     render();
   };
 }
-
-function bindOfficeEvents(){
-  const addOfficeBtn=document.getElementById('addOfficeBtn');
-  if(addOfficeBtn)addOfficeBtn.onclick=()=>{
-    const input=document.getElementById('newOfficeInput');
-    const value=(input.value||'').trim();
-    if(!value)return;
-    if(!state.offices.includes(value)){
-      state.offices.push(value);
-      persistAll();
-    }
-    render();
-  };
-
-  document.querySelectorAll('[data-office-delete]').forEach(btn=>{
-    btn.onclick=()=>{
-      const name=btn.getAttribute('data-office-delete');
-      state.offices=state.offices.filter(o=>o!==name);
-      state.clients=state.clients.map(c=>c.officeName===name?{...c,officeName:''}:c);
-      persistAll();
-      render();
-    };
-  });
-
-  const officeBackBtn=document.getElementById('officeBackBtn');
-  if(officeBackBtn)officeBackBtn.onclick=openList;
-}
-
-function bindSettingsEvents(){
+function bindSettings(){
   const toggleAnonymous=document.getElementById('toggleAnonymous');
-  if(toggleAnonymous)toggleAnonymous.onclick=()=>{
-    state.settings.anonymousList=!state.settings.anonymousList;
-    persistAll();
-    render();
-  };
-
+  if(toggleAnonymous) toggleAnonymous.onclick=function(){ state.settings.anonymousList=!state.settings.anonymousList; save(); render(); };
   const toggleMaskPhone=document.getElementById('toggleMaskPhone');
-  if(toggleMaskPhone)toggleMaskPhone.onclick=()=>{
-    state.settings.maskPhone=!state.settings.maskPhone;
-    persistAll();
-    render();
-  };
-
+  if(toggleMaskPhone) toggleMaskPhone.onclick=function(){ state.settings.maskPhone=!state.settings.maskPhone; save(); render(); };
   const autoLockSelect=document.getElementById('autoLockSelect');
-  if(autoLockSelect)autoLockSelect.onchange=e=>{
-    state.settings.autoLockMinutes=Number(e.target.value);
-    persistAll();
-    resetLockTimer();
-  };
-
+  if(autoLockSelect) autoLockSelect.onchange=function(e){ state.settings.autoLockMinutes=Number(e.target.value); save(); resetLock(); };
   const exportBtn=document.getElementById('exportBtn');
-  if(exportBtn)exportBtn.onclick=exportBackup;
-
+  if(exportBtn) exportBtn.onclick=exportBackup;
   const importInput=document.getElementById('importInput');
-  if(importInput)importInput.onchange=e=>{
-    const file=e.target.files&&e.target.files[0];
-    if(file)importBackup(file);
-  };
-
+  if(importInput) importInput.onchange=function(e){ const file=e.target.files&&e.target.files[0]; if(file) importBackup(file); };
   const clearAllBtn=document.getElementById('clearAllBtn');
-  if(clearAllBtn)clearAllBtn.onclick=()=>showModal('clear','全データを削除しますか？','利用者・事業所・設定をすべて削除します。この操作は元に戻せません。');
-
+  if(clearAllBtn) clearAllBtn.onclick=function(){ state.modal={type:'clear',title:'全データを削除しますか？',text:'利用者データと設定をすべて削除します。この操作は元に戻せません。'}; render(); };
   const changePinBtn=document.getElementById('changePinBtn');
-  if(changePinBtn)changePinBtn.onclick=()=>{
-    state.locked=true;
-    state.pinInput='';
-    state.pinStage='setup';
-    state.firstPin='';
-    render();
-  };
-
+  if(changePinBtn) changePinBtn.onclick=function(){ state.locked=true; state.pinInput=''; state.pinStage='setup'; state.firstPin=''; render(); };
   const settingsBackBtn=document.getElementById('settingsBackBtn');
-  if(settingsBackBtn)settingsBackBtn.onclick=openList;
+  if(settingsBackBtn) settingsBackBtn.onclick=openList;
 }
-
-function bindModalEvents(){
+function bindModal(){
   const modalOkBtn=document.getElementById('modalOkBtn');
-  if(modalOkBtn)modalOkBtn.onclick=closeModal;
-
+  if(modalOkBtn) modalOkBtn.onclick=function(){ state.modal=null; render(); };
   const modalCancelBtn=document.getElementById('modalCancelBtn');
-  if(modalCancelBtn)modalCancelBtn.onclick=closeModal;
-
+  if(modalCancelBtn) modalCancelBtn.onclick=function(){ state.modal=null; render(); };
   const modalDeleteBtn=document.getElementById('modalDeleteBtn');
-  if(modalDeleteBtn)modalDeleteBtn.onclick=()=>{
-    state.clients=state.clients.filter(c=>c.id!==state.selectedId);
-    persistAll();
+  if(modalDeleteBtn) modalDeleteBtn.onclick=function(){
+    state.clients=state.clients.filter(function(c){ return c.id!==state.selectedId; });
+    save();
     state.selectedId=null;
     state.modal=null;
     state.view='list';
     render();
   };
-
   const modalClearBtn=document.getElementById('modalClearBtn');
-  if(modalClearBtn)modalClearBtn.onclick=()=>{
+  if(modalClearBtn) modalClearBtn.onclick=function(){
     state.clients=[];
-    state.offices=[];
     state.settings={autoLockMinutes:3,anonymousList:true,maskPhone:true};
-    persistAll();
+    save();
     state.selectedId=null;
     state.formData=null;
     state.search='';
@@ -733,9 +522,8 @@ function bindModalEvents(){
     render();
   };
 }
-
 function exportBackup(){
-  const payload={exportedAt:new Date().toISOString(),app:'重訪ケア管理',version:3,clients:state.clients,offices:state.offices,settings:state.settings};
+  const payload={exportedAt:new Date().toISOString(),app:'重訪ケア管理',version:1,clients:state.clients,settings:state.settings};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -745,28 +533,26 @@ function exportBackup(){
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  showModal('info','バックアップを書き出しました','ダウンロードファイルを安全な場所に保管してください。');
+  alert('バックアップを書き出しました');
 }
-
 function importBackup(file){
   const reader=new FileReader();
-  reader.onload=()=>{
+  reader.onload=function(){
     try{
       const data=JSON.parse(reader.result);
-      if(!data||!Array.isArray(data.clients)||!Array.isArray(data.offices))throw new Error('invalid');
+      if(!data||!Array.isArray(data.clients)) throw new Error('invalid');
       state.clients=data.clients;
-      state.offices=data.offices;
-      state.settings={autoLockMinutes:3,anonymousList:true,maskPhone:true,...(data.settings||{})};
-      persistAll();
-      showModal('info','復元が完了しました','バックアップデータをこの端末に復元しました。');
-    }catch{
-      showModal('info','復元できませんでした','JSON形式が正しくないか、対応していないバックアップです。');
+      state.settings=Object.assign({autoLockMinutes:3,anonymousList:true,maskPhone:true},data.settings||{});
+      save();
+      alert('復元が完了しました');
+      render();
+    }catch(e){
+      alert('復元できませんでした');
     }
   };
   reader.readAsText(file);
 }
-
-window.addEventListener('visibilitychange',()=>{
+window.addEventListener('visibilitychange',function(){
   if(document.hidden&&!state.locked){
     state.locked=true;
     state.pinInput='';
@@ -774,10 +560,10 @@ window.addEventListener('visibilitychange',()=>{
     render();
   }
 });
-window.addEventListener('beforeunload',persistAll);
-
-loadState();
+window.addEventListener('beforeunload',save);
+load();
 render();
+})();
 </script>
 </body>
 </html>
